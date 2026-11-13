@@ -59,6 +59,28 @@ try:
 except Exception:
     load_matches_from_old_repo = None
 
+# --- TAMBAHAN SCAN: TIDAK MENGHAPUS YANG LAMA, CUMA NAMBAH ---
+try:
+    from scanner import run_scan as _run_scan_from_scanner
+except Exception:
+    try:
+        from espn_scanner import run_scan as _run_scan_from_scanner
+    except Exception:
+        try:
+            from live_scanner import scan_live as _run_scan_from_scanner
+        except Exception:
+            _run_scan_from_scanner = None
+
+def _try_run_scan():
+    """Panggil scan ESPN kalau file scanner-nya ada. Kalau tidak ada, balik ke data lama, tidak error."""
+    if _run_scan_from_scanner is None:
+        return {"ok": False, "msg": "File scanner.py belum ada / nama fungsinya beda"}
+    try:
+        result = _run_scan_from_scanner()
+        return {"ok": True, "msg": str(result)}
+    except Exception as e:
+        return {"ok": False, "msg": str(e)}
+
 WITA_TZ = ZoneInfo(TIMEZONE_NAME)
 
 st.set_page_config(
@@ -131,6 +153,25 @@ def get_peak_hours_label(now_wita: datetime) -> str:
     return "07:00–13:00 WITA: Jam Transisi (Aktivitas Pertandingan Reguler Rendah)"
 
 def render_dashboard() -> None:
+    # --- TAMBAHAN: Panel Scan - taruh paling atas dashboard ---
+    st.markdown("### 🔄 Live Scan ESPN")
+    c_scan1, c_scan2, c_scan3 = st.columns([1, 1, 3])
+    with c_scan1:
+        if st.button("🔄 Scan Sekarang", use_container_width=True):
+            with st.spinner("Lagi scan ESPN..."):
+                res = _try_run_scan()
+                if res["ok"]:
+                    st.success(f"Scan berhasil: {res['msg']}")
+                else:
+                    st.warning(f"Scan belum jalan: {res['msg']} | Masih pakai data lama, tidak error.")
+                st.rerun()
+    with c_scan2:
+        if st.button("🧹 Clear Cache & Reload", use_container_width=True):
+            st.cache_data.clear()
+            st.rerun()
+    with c_scan3:
+        st.caption("Kalau tombol Scan bilang 'scanner.py belum ada', berarti file scanner bapak namanya beda. Kirim nama file scanner-nya, saya sesuaikan import-nya. Data lama tetap tampil, tidak hilang.")
+
     # --- REVISI: Ambil data dari repo lama dulu ---
     all_records = []
     if load_matches_from_old_repo:
@@ -150,6 +191,25 @@ def render_dashboard() -> None:
         scan_meta = {}
     if not scan_meta:
         scan_meta = {"scan_timestamp_wita": "DARI REPO LAMA skor60", "source_status": "LOADED_FROM_OLD_REPO", "live_matches_seen": len(all_records)}
+
+    # --- TAMBAHAN: Auto-scan 1x per 15 menit, biar tidak NEVER_SCANNED terus ---
+    try:
+        if "last_scan_time" not in st.session_state:
+            st.session_state.last_scan_time = None
+        _now_ts = datetime.now(timezone.utc).timestamp()
+        _last_ts = st.session_state.last_scan_time or 0
+        if (_now_ts - _last_ts) > 900:  # 900 detik = 15 menit
+            _res_auto = _try_run_scan()
+            if _res_auto["ok"]:
+                st.session_state.last_scan_time = _now_ts
+                try:
+                    _fresh = load_matches_from_old_repo() or []
+                    if _fresh:
+                        all_records = _fresh
+                except Exception:
+                    pass
+    except Exception:
+        pass
 
     stats = compute_full_dashboard_statistics(all_records)
 
