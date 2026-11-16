@@ -12,6 +12,8 @@ from typing import Any, Dict, List
 
 import pandas as pd
 import plotly.express as px
+import plotly.io as pio
+pio.templates.default = "plotly_dark"
 import plotly.graph_objects as go
 import streamlit as st
 from zoneinfo import ZoneInfo
@@ -91,20 +93,26 @@ st.set_page_config(
 )
 st.markdown("""
 <style>
-/* PAKSA SEMUA JADI HITAM */
-.stApp, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stVerticalBlock"], section {
+.stApp, [data-testid="stAppViewContainer"] {
     background-color: #0A0A0A !important;
 }
-/* PAKSA SEMUA CARD / BOX PUTIH JADI HITAM */
-div, section, article {
-    background-color: transparent !important;
+[data-testid="stMainBlockContainer"] {
+    background-color: #0A0A0A !important;
+    padding-top: 20px;
 }
-[data-testid="stExpander"], [data-testid="stTabs"], [data-testid="stDataFrame"] {
+/* Card biar ada kotaknya, nggak nempel */
+[data-testid="stVerticalBlock"] > div {
     background-color: #1A1A1A !important;
+    border: 1px solid #2A2A2A !important;
+    border-radius: 12px !important;
+    padding: 12px !important;
+    margin-bottom: 12px !important;
 }
-/* TULISAN */
-h1, h2, h3, h4, h5, h6, p, span, label, div {
+h1, h2, h3, h4, p, span, div, label {
     color: #EAEAEA !important;
+}
+small, .stCaption {
+    color: #9CA3AF !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -447,7 +455,14 @@ def render_dashboard() -> None:
                 st.plotly_chart(fig_donut, use_container_width=True)
             else:
                 st.caption("Data belum cukup untuk grafik distribusi status.")
-
+fig.update_layout(
+    paper_bgcolor="#1A1A1A",
+    plot_bgcolor="#1A1A1A",
+    font_color="white",
+    title_font_color="white",
+    xaxis=dict(gridcolor="#333333", tickfont=dict(color="white")),
+    yaxis=dict(gridcolor="#333333", tickfont=dict(color="white"))
+)
         day_summaries = list(reversed(stats["by_trading_day"]))
         settled_days = [d for d in day_summaries if d["settled_matches"] > 0]
 
@@ -466,7 +481,14 @@ def render_dashboard() -> None:
                 st.plotly_chart(fig_daily, use_container_width=True)
             else:
                 st.caption("Belum ada pertandingan settled untuk grafik profit harian.")
-
+fig.update_layout(
+    paper_bgcolor="#1A1A1A",
+    plot_bgcolor="#1A1A1A",
+    font_color="white",
+    title_font_color="white",
+    xaxis=dict(gridcolor="#333333", tickfont=dict(color="white")),
+    yaxis=dict(gridcolor="#333333", tickfont=dict(color="white"))
+)
         with g_col3:
             if settled_days:
                 df_days = pd.DataFrame(settled_days)
@@ -482,7 +504,14 @@ def render_dashboard() -> None:
                 st.plotly_chart(fig_cum, use_container_width=True)
             else:
                 st.caption("Belum ada pertandingan settled untuk grafik cumulative profit.")
-
+fig.update_layout(
+    paper_bgcolor="#1A1A1A",
+    plot_bgcolor="#1A1A1A",
+    font_color="white",
+    title_font_color="white",
+    xaxis=dict(gridcolor="#333333", tickfont=dict(color="white")),
+    yaxis=dict(gridcolor="#333333", tickfont=dict(color="white"))
+)
         g_col4, g_col5, g_col6 = st.columns(3)
 
         with g_col4:
@@ -505,7 +534,14 @@ def render_dashboard() -> None:
                 st.plotly_chart(fig_tier, use_container_width=True)
             else:
                 st.caption("Data belum cukup untuk grafik Major vs Minor.")
-
+fig.update_layout(
+    paper_bgcolor="#1A1A1A",
+    plot_bgcolor="#1A1A1A",
+    font_color="white",
+    title_font_color="white",
+    xaxis=dict(gridcolor="#333333", tickfont=dict(color="white")),
+    yaxis=dict(gridcolor="#333333", tickfont=dict(color="white"))
+)
         with g_col5:
             actual_settled = [
                 r for r in all_records
@@ -526,7 +562,14 @@ def render_dashboard() -> None:
                 st.plotly_chart(fig_odds, use_container_width=True)
             else:
                 st.caption("Data odds aktual belum cukup untuk grafik Win Rate berdasarkan odds.")
-
+fig.update_layout(
+    paper_bgcolor="#1A1A1A",
+    plot_bgcolor="#1A1A1A",
+    font_color="white",
+    title_font_color="white",
+    xaxis=dict(gridcolor="#333333", tickfont=dict(color="white")),
+    yaxis=dict(gridcolor="#333333", tickfont=dict(color="white"))
+)
         with g_col6:
             entry_mins = [int(r["minute_detected"]) for r in all_records if r.get("minute_detected") is not None]
             if entry_mins:
@@ -542,7 +585,14 @@ def render_dashboard() -> None:
                 st.plotly_chart(fig_min, use_container_width=True)
             else:
                 st.caption("Data belum cukup untuk grafik distribusi menit entry.")
-
+fig.update_layout(
+    paper_bgcolor="#1A1A1A",
+    plot_bgcolor="#1A1A1A",
+    font_color="white",
+    title_font_color="white",
+    xaxis=dict(gridcolor="#333333", tickfont=dict(color="white")),
+    yaxis=dict(gridcolor="#333333", tickfont=dict(color="white"))
+)
     # =================================================================
     # 5. RINGKASAN TRADING DAY
     # =================================================================
