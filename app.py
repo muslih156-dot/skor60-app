@@ -92,6 +92,17 @@ def style_fig(fig):
     )
     return fig
 
+# --- HELPER BARU: Bikin semua tabel jadi hitam ---
+def style_dark_table(df):
+    return (
+        df.style
+        .set_properties(**{"background-color": "#121212", "color": "#EAEAEA", "border-color": "#2A2A2A"})
+        .set_table_styles([
+            {"selector": "th", "props": [("background-color", "#1E293B"), ("color", "white"), ("border-color", "#2A2A2A")]},
+            {"selector": "td", "props": [("border-color", "#2A2A2A")]},
+        ])
+    )
+
 st.set_page_config(
     page_title="TRADING BOLA MENIT 60 – LAST GOAL SYSTEM",
     page_icon="⚽",
@@ -99,10 +110,9 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- CSS FULL HITAM - TIDAK ADA LAGI YANG BELANG ---
+# --- CSS FULL HITAM ---
 st.markdown("""
 <style>
-/* 1. Background utama full hitam */
 .stApp, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] {
     background-color: #0A0A0A !important;
 }
@@ -110,15 +120,12 @@ st.markdown("""
     padding-top: 20px !important;
     max-width: 100% !important;
 }
-/* 2. HAPUS aturan yang bikin belang: jangan kasih background ke semua VerticalBlock */
-/* 3. Semua teks jadi putih / abu terang */
 h1, h2, h3, h4, p, span, div, label, li {
     color: #EAEAEA !important;
 }
 small, .stCaption, [data-testid="stCaptionContainer"] {
     color: #9CA3AF !important;
 }
-/* 4. Expander, Tabs, Selectbox, Button jadi hitam */
 [data-testid="stExpander"], [data-testid="stTabs"], [data-testid="stSelectbox"], [data-testid="stDataFrame"] {
     background-color: #121212 !important;
     border: 1px solid #2A2A2A !important;
@@ -132,37 +139,31 @@ button[data-baseweb="tab"][aria-selected="true"] {
     background-color: #1E293B !important;
     color: #FFFFFF !important;
 }
-/* Input / Selectbox */
 div[data-baseweb="select"] > div, input {
     background-color: #1A1A1A !important;
     color: #FFFFFF !important;
     border-color: #2A2A2A !important;
 }
-/* Button */
 .stButton > button {
     background-color: #1E293B !important;
     color: #FFFFFF !important;
     border: 1px solid #334155 !important;
 }
-/* 5. DataFrame / Tabel - paksa hitam */
 [data-testid="stDataFrame"], [data-testid="stDataFrame"] > div, [data-testid="stDataFrame"] iframe {
     background-color: #121212 !important;
     color: #EAEAEA !important;
 }
-/* 6. Plotly chart container hitam */
 [data-testid="stPlotlyChart"], [data-testid="stPlotlyChart"] > div {
     background-color: #121212 !important;
     border: 1px solid #2A2A2A !important;
     border-radius: 12px !important;
     padding: 8px !important;
 }
-/* 7. Alert info/warning tetap gelap */
 [data-testid="stAlert"] {
     background-color: #1A1A1A !important;
     color: #EAEAEA !important;
     border: 1px solid #2A2A2A !important;
 }
-/* 8. Metric bawaan streamlit */
 [data-testid="stMetric"] {
     background-color: #121212 !important;
     border: 1px solid #2A2A2A !important;
@@ -211,12 +212,6 @@ st.markdown(
         color: #cbd5e1;
         margin-top: 0.3rem;
     }
-    .badge-win { background-color: #16a34a; color: white; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
-    .badge-lose { background-color: #dc2626; color: white; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
-    .badge-live { background-color: #2563eb; color: white; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
-    .badge-pending { background-color: #ca8a04; color: white; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
-    .badge-void { background-color: #64748b; color: white; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
-    .badge-review { background-color: #ea580c; color: white; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -332,83 +327,19 @@ def render_dashboard() -> None:
     major_stats = stats["by_league_tier"]["MAJOR"]
 
     cols = st.columns(5)
-
     with cols[0]:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-title">CARD 1 – MODAL PER MATCH</div>
-                <div class="metric-value">{format_idr(DEFAULT_STAKE)}</div>
-                <div class="metric-sub">Odds Simulasi: <b>{SIMULATED_ODDS:.2f}</b> ({CURRENCY})</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.markdown(f"""<div class="metric-card"><div class="metric-title">CARD 1 – MODAL PER MATCH</div><div class="metric-value">{format_idr(DEFAULT_STAKE)}</div><div class="metric-sub">Odds Simulasi: <b>{SIMULATED_ODDS:.2f}</b> ({CURRENCY})</div></div>""", unsafe_allow_html=True)
     with cols[1]:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-title">CARD 2 – TOTAL MODAL KELUAR</div>
-                <div class="metric-value">{format_idr(sim_stats['total_stake_settled'])}</div>
-                <div class="metric-sub">Settled: <b>{sim_stats['settled_matches']}</b> Match (Excl. Pending/Void)</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.markdown(f"""<div class="metric-card"><div class="metric-title">CARD 2 – TOTAL MODAL KELUAR</div><div class="metric-value">{format_idr(sim_stats['total_stake_settled'])}</div><div class="metric-sub">Settled: <b>{sim_stats['settled_matches']}</b> Match (Excl. Pending/Void)</div></div>""", unsafe_allow_html=True)
     with cols[2]:
-        act_profit_label = (
-            f"{format_idr(act_stats['net_profit'])} (ROI {act_stats['roi']:.2f}%)"
-            if act_stats["available"]
-            else "ACTUAL ODDS: NOT AVAILABLE"
-        )
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-title">CARD 3 – TOTAL PROFIT</div>
-                <div class="metric-value">{format_idr(sim_stats['net_profit'])} <span style="font-size:0.8rem; color:#10b981;">(Sim)</span></div>
-                <div class="metric-sub">
-                    Sim ROI: <b>{sim_stats['roi']:.2f}%</b><br/>
-                    Actual: <b>{act_profit_label}</b>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        act_profit_label = (f"{format_idr(act_stats['net_profit'])} (ROI {act_stats['roi']:.2f}%)" if act_stats["available"] else "ACTUAL ODDS: NOT AVAILABLE")
+        st.markdown(f"""<div class="metric-card"><div class="metric-title">CARD 3 – TOTAL PROFIT</div><div class="metric-value">{format_idr(sim_stats['net_profit'])} <span style="font-size:0.8rem; color:#10b981;">(Sim)</span></div><div class="metric-sub">Sim ROI: <b>{sim_stats['roi']:.2f}%</b><br/>Actual: <b>{act_profit_label}</b></div></div>""", unsafe_allow_html=True)
     with cols[3]:
         ci_low, ci_high = sim_stats["wilson_ci_95"]
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-title">CARD 4 – WIN RATE</div>
-                <div class="metric-value">{sim_stats['win_rate']:.2f}%</div>
-                <div class="metric-sub">
-                    <b>{sim_stats['win']}</b>W / <b>{sim_stats['lose']}</b>L /
-                    <b>{sim_stats['void']}</b>V / <b>{sim_stats['pending']}</b>P<br/>
-                    Wilson 95% CI: [{ci_low:.1f}%, {ci_high:.1f}%]
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.markdown(f"""<div class="metric-card"><div class="metric-title">CARD 4 – WIN RATE</div><div class="metric-value">{sim_stats['win_rate']:.2f}%</div><div class="metric-sub"><b>{sim_stats['win']}</b>W / <b>{sim_stats['lose']}</b>L / <b>{sim_stats['void']}</b>V / <b>{sim_stats['pending']}</b>P<br/>Wilson 95% CI: [{ci_low:.1f}%, {ci_high:.1f}%]</div></div>""", unsafe_allow_html=True)
     with cols[4]:
-        major_badge = (
-            "⚠️ LOW SAMPLE SIZE"
-            if major_stats["settled_matches"] < MIN_SAMPLE_SIZE_RELIABLE
-            else "✅ SAMPLE OK"
-        )
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-title">CARD 5 – MAJOR PERFORMANCE</div>
-                <div class="metric-value">{major_stats['win_rate']:.2f}% WR</div>
-                <div class="metric-sub">
-                    Profit (Sim): <b>{format_idr(major_stats['simulated_profit'])}</b> | ROI: <b>{major_stats['simulated_roi']:.2f}%</b><br/>
-                    Sampel: <b>{major_stats['settled_matches']}</b> settled ({major_badge})
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        major_badge = ("⚠️ LOW SAMPLE SIZE" if major_stats["settled_matches"] < MIN_SAMPLE_SIZE_RELIABLE else "✅ SAMPLE OK")
+        st.markdown(f"""<div class="metric-card"><div class="metric-title">CARD 5 – MAJOR PERFORMANCE</div><div class="metric-value">{major_stats['win_rate']:.2f}% WR</div><div class="metric-sub">Profit (Sim): <b>{format_idr(major_stats['simulated_profit'])}</b> | ROI: <b>{major_stats['simulated_roi']:.2f}%</b><br/>Sampel: <b>{major_stats['settled_matches']}</b> settled ({major_badge})</div></div>""", unsafe_allow_html=True)
 
     st.write("")
 
@@ -456,7 +387,7 @@ def render_dashboard() -> None:
                     "Profit Aktual": format_idr(t_info["actual_profit"]) if t_info["actual_available"] else "NOT AVAILABLE",
                     "Validitas Sampel": t_info["sample_status"],
                 })
-            st.dataframe(pd.DataFrame(tier_rows), use_container_width=True, hide_index=True)
+            st.dataframe(style_dark_table(pd.DataFrame(tier_rows)), use_container_width=True, hide_index=True)
 
     st.subheader("📈 Visualisasi Performa & Distribusi")
     if len(all_records) == 0:
@@ -464,106 +395,46 @@ def render_dashboard() -> None:
     else:
         g_col1, g_col2, g_col3 = st.columns(3)
         with g_col1:
-            status_counts = {
-                "WIN": sim_stats["win"],
-                "LOSE": sim_stats["lose"],
-                "VOID": sim_stats["void"],
-                "PENDING": sim_stats["pending"],
-                "REVIEW": sim_stats["unverified"],
-            }
+            status_counts = {"WIN": sim_stats["win"], "LOSE": sim_stats["lose"], "VOID": sim_stats["void"], "PENDING": sim_stats["pending"], "REVIEW": sim_stats["unverified"]}
             non_zero_status = {k: v for k, v in status_counts.items() if v > 0}
             if non_zero_status:
-                fig_donut = px.pie(
-                    names=list(non_zero_status.keys()),
-                    values=list(non_zero_status.values()),
-                    hole=0.55,
-                    title="Distribusi Status Pertandingan",
-                    color=list(non_zero_status.keys()),
-                    color_discrete_map={
-                        "WIN": "#16a34a",
-                        "LOSE": "#dc2626",
-                        "VOID": "#64748b",
-                        "PENDING": "#ca8a04",
-                        "REVIEW": "#ea580c",
-                    },
-                )
+                fig_donut = px.pie(names=list(non_zero_status.keys()), values=list(non_zero_status.values()), hole=0.55, title="Distribusi Status Pertandingan", color=list(non_zero_status.keys()), color_discrete_map={"WIN": "#16a34a", "LOSE": "#dc2626", "VOID": "#64748b", "PENDING": "#ca8a04", "REVIEW": "#ea580c"})
                 st.plotly_chart(style_fig(fig_donut), use_container_width=True)
             else:
                 st.caption("Data belum cukup untuk grafik distribusi status.")
-
         day_summaries = list(reversed(stats["by_trading_day"]))
         settled_days = [d for d in day_summaries if d["settled_matches"] > 0]
-
         with g_col2:
             if settled_days:
                 df_days = pd.DataFrame(settled_days)
-                fig_daily = px.bar(
-                    df_days,
-                    x="trading_day",
-                    y="simulated_profit",
-                    title="Grafik Profit Harian (Simulasi IDR)",
-                    labels={"trading_day": "Trading Day (Cut-off 12:00 WITA)", "simulated_profit": "Net Profit (IDR)"},
-                    color="simulated_profit",
-                    color_continuous_scale=["#dc2626", "#16a34a"],
-                )
+                fig_daily = px.bar(df_days, x="trading_day", y="simulated_profit", title="Grafik Profit Harian (Simulasi IDR)", labels={"trading_day": "Trading Day (Cut-off 12:00 WITA)", "simulated_profit": "Net Profit (IDR)"}, color="simulated_profit", color_continuous_scale=["#dc2626", "#16a34a"])
                 st.plotly_chart(style_fig(fig_daily), use_container_width=True)
             else:
                 st.caption("Belum ada pertandingan settled untuk grafik profit harian.")
-
         with g_col3:
             if settled_days:
                 df_days = pd.DataFrame(settled_days)
                 df_days["cumulative_profit"] = df_days["simulated_profit"].cumsum()
-                fig_cum = px.line(
-                    df_days,
-                    x="trading_day",
-                    y="cumulative_profit",
-                    markers=True,
-                    title="Grafik Cumulative Profit (Simulasi IDR)",
-                    labels={"trading_day": "Trading Day", "cumulative_profit": "Cumulative Profit (IDR)"},
-                )
+                fig_cum = px.line(df_days, x="trading_day", y="cumulative_profit", markers=True, title="Grafik Cumulative Profit (Simulasi IDR)", labels={"trading_day": "Trading Day", "cumulative_profit": "Cumulative Profit (IDR)"})
                 st.plotly_chart(style_fig(fig_cum), use_container_width=True)
             else:
                 st.caption("Belum ada pertandingan settled untuk grafik cumulative profit.")
-
         g_col4, g_col5, g_col6 = st.columns(3)
         with g_col4:
-            tier_list = [
-                stats["by_league_tier"]["MAJOR"],
-                stats["by_league_tier"]["MINOR"],
-                stats["by_league_tier"]["UNKNOWN"],
-            ]
+            tier_list = [stats["by_league_tier"]["MAJOR"], stats["by_league_tier"]["MINOR"], stats["by_league_tier"]["UNKNOWN"]]
             active_tiers = [t for t in tier_list if t["total_matches"] > 0]
             if active_tiers:
                 df_tier = pd.DataFrame(active_tiers)
-                fig_tier = px.bar(
-                    df_tier,
-                    x="tier",
-                    y=["win", "lose"],
-                    barmode="group",
-                    title="Performa Major vs Minor vs Unknown",
-                    labels={"tier": "Klasifikasi Liga", "value": "Jumlah Pertandingan"},
-                )
+                fig_tier = px.bar(df_tier, x="tier", y=["win", "lose"], barmode="group", title="Performa Major vs Minor vs Unknown", labels={"tier": "Klasifikasi Liga", "value": "Jumlah Pertandingan"})
                 st.plotly_chart(style_fig(fig_tier), use_container_width=True)
             else:
                 st.caption("Data belum cukup untuk grafik Major vs Minor.")
         with g_col5:
-            actual_settled = [
-                r for r in all_records
-                if r.get("odds_entry") is not None and r.get("result") in ("WIN", "LOSE")
-            ]
+            actual_settled = [r for r in all_records if r.get("odds_entry") is not None and r.get("result") in ("WIN", "LOSE")]
             if len(actual_settled) >= 2:
                 df_odds = pd.DataFrame(actual_settled)
                 df_odds["is_win"] = (df_odds["result"] == "WIN").astype(int) * 100.0
-                fig_odds = px.histogram(
-                    df_odds,
-                    x="odds_entry",
-                    y="is_win",
-                    histfunc="avg",
-                    nbins=8,
-                    title="Win Rate (%) Berdasarkan Odds Aktual",
-                    labels={"odds_entry": "Odds Entry", "is_win": "Win Rate (%)"},
-                )
+                fig_odds = px.histogram(df_odds, x="odds_entry", y="is_win", histfunc="avg", nbins=8, title="Win Rate (%) Berdasarkan Odds Aktual", labels={"odds_entry": "Odds Entry", "is_win": "Win Rate (%)"})
                 st.plotly_chart(style_fig(fig_odds), use_container_width=True)
             else:
                 st.caption("Data odds aktual belum cukup untuk grafik Win Rate berdasarkan odds.")
@@ -571,18 +442,15 @@ def render_dashboard() -> None:
             entry_mins = [int(r["minute_detected"]) for r in all_records if r.get("minute_detected") is not None]
             if entry_mins:
                 df_min = pd.DataFrame({"minute_detected": entry_mins})
-                fig_min = px.histogram(
-                    df_min,
-                    x="minute_detected",
-                    nbins=7,
-                    title="Distribusi Menit Entry (60'–66')",
-                    labels={"minute_detected": "Menit Deteksi Entry"},
-                )
+                fig_min = px.histogram(df_min, x="minute_detected", nbins=7, title="Distribusi Menit Entry (60'–66')", labels={"minute_detected": "Menit Deteksi Entry"})
                 fig_min.update_layout(bargap=0.2)
                 st.plotly_chart(style_fig(fig_min), use_container_width=True)
             else:
                 st.caption("Data belum cukup untuk grafik distribusi menit entry.")
 
+    # =================================================================
+    # 5. RINGKASAN TRADING DAY - INI YANG UDAH DIBENERIN JADI HITAM
+    # =================================================================
     st.subheader("🗓️ Ringkasan Partisi Harian (Cut-Off 12:00 WITA)")
     if not stats["by_trading_day"]:
         st.caption("Belum ada riwayat trading day di database.")
@@ -602,16 +470,12 @@ def render_dashboard() -> None:
             }
             for d in stats["by_trading_day"]
         ])
-        st.dataframe(df_td, use_container_width=True, hide_index=True)
+        st.dataframe(style_dark_table(df_td), use_container_width=True, hide_index=True)
 
     st.subheader("📋 Daftar Pertandingan (20 Terbaru Sesuai Filter)")
     f_col1, f_col2 = st.columns([2, 1])
     with f_col1:
-        status_filter = st.selectbox(
-            "Filter Kategori / Status:",
-            options=["Semua", "LIVE", "WIN", "LOSE", "PENDING", "VOID", "REVIEW", "MAJOR", "MINOR"],
-            index=0,
-        )
+        status_filter = st.selectbox("Filter Kategori / Status:", options=["Semua", "LIVE", "WIN", "LOSE", "PENDING", "VOID", "REVIEW", "MAJOR", "MINOR"], index=0)
     with f_col2:
         available_days = ["Semua"] + [d["trading_day"] for d in stats["by_trading_day"]]
         day_filter = st.selectbox("Filter Trading Day:", options=available_days, index=0)
@@ -652,9 +516,7 @@ def render_dashboard() -> None:
             res = str(rec.get("result") or "PENDING").upper()
             m_status = str(rec.get("match_status") or "")
             is_live_now = m_status in ("First Half", "Second Half", "Halftime", "Live", "Extra Time", "Penalties") and res == "PENDING"
-            display_status = "LIVE" if is_live_now else (
-                "REVIEW" if rec.get("settlement_status") == "REVIEW" else res
-            )
+            display_status = "LIVE" if is_live_now else ("REVIEW" if rec.get("settlement_status") == "REVIEW" else res)
             badge_tier = "MAJOR" if rec.get("is_major") else str(rec.get("league_category") or "UNKNOWN")
             odds_disp = f"{rec.get('odds_entry', SIMULATED_ODDS):.2f} (Actual)" if rec.get("odds_entry") is not None else f"{SIMULATED_ODDS:.2f} (Sim)"
             pnl_val = rec.get("actual_profit") if rec.get("odds_entry") is not None else rec.get("simulated_profit", 0)
@@ -699,15 +561,11 @@ def render_dashboard() -> None:
                 styles[row.index.get_loc('Activity')] = "background-color: #d32f2f; color: white; font-weight: bold;"
             return styles
 
-        # Pakai styler dengan background hitam biar tabel tidak putih lagi
         styled = df_table.style.apply(style_table, axis=1).set_properties(**{"background-color": "#121212", "color": "#EAEAEA"}).set_table_styles([{"selector": "th", "props": [("background-color", "#1E293B"), ("color", "white")]}])
         st.dataframe(styled, use_container_width=True, hide_index=True)
 
         st.subheader("🔍 Audit Trail & Penjelasan Hasil Pertandingan")
-        match_options = {
-            f"[{r.get('trading_day')}] {r.get('home_team')} vs {r.get('away_team')} (ID: {r.get('match_id')})": r
-            for r in top_20
-        }
+        match_options = {f"[{r.get('trading_day')}] {r.get('home_team')} vs {r.get('away_team')} (ID: {r.get('match_id')})": r for r in top_20}
         selected_label = st.selectbox("Pilih Pertandingan untuk Audit Mendalam:", options=list(match_options.keys()))
         if selected_label:
             sel_rec = match_options[selected_label]
@@ -746,20 +604,20 @@ def render_dashboard() -> None:
                 st.markdown("**Riwayat Snapshot Skor Berkala:**")
                 snaps = sel_rec.get("snapshots") or []
                 if snaps:
-                    st.dataframe(pd.DataFrame(snaps), use_container_width=True, hide_index=True)
+                    st.dataframe(style_dark_table(pd.DataFrame(snaps)), use_container_width=True, hide_index=True)
                 else:
                     st.caption("Tidak ada snapshot.")
             with s_col2:
                 st.markdown("**Bukti Event Gol / Perubahan Skor:**")
                 g_events = sel_rec.get("goal_events") or []
                 if g_events:
-                    st.dataframe(pd.DataFrame(g_events), use_container_width=True, hide_index=True)
+                    st.dataframe(style_dark_table(pd.DataFrame(g_events)), use_container_width=True, hide_index=True)
                 else:
                     st.caption("Belum ada event gol tercatat.")
             revs = sel_rec.get("revision_history") or []
             if revs:
                 st.markdown("**Riwayat Perubahan / Koreksi Resmi Provider (Revision History):**")
-                st.dataframe(pd.DataFrame(revs), use_container_width=True, hide_index=True)
+                st.dataframe(style_dark_table(pd.DataFrame(revs)), use_container_width=True, hide_index=True)
 
 if __name__ == "__main__":
     render_dashboard()
