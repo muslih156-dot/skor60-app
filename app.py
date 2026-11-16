@@ -1,7 +1,7 @@
 """
 app.py
 TRADING BOLA MENIT 60 – LAST GOAL SYSTEM
-FIX FINAL: Stadion jadi HERO BANNER GEDE di atas (bukan background samar)
+FULL VERSION - Hero Stadion 380px + Kotak Hitam (Fix Gepeng)
 """
 
 from datetime import datetime, timezone
@@ -194,7 +194,7 @@ def render_match_table_html(table_rows):
 
 st.set_page_config(page_title="TRADING BOLA MENIT 60 – LAST GOAL SYSTEM", page_icon="⚽", layout="wide", initial_sidebar_state="expanded")
 
-# ===== BACKGROUND BALIK HITAM POLOS - STADION PINDAH KE HERO BANNER =====
+# ===== BACKGROUND HITAM POLOS - STADION PINDAH KE HERO BANNER =====
 st.markdown("""
 <style>
 .stApp, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] { background: #0A0F1A !important; background-color: #0A0F1A !important; }
@@ -221,31 +221,32 @@ div[data-baseweb="select"] > div, input { background-color: #1A2436 !important; 
 .audit-card-gold { background: linear-gradient(180deg, #4A3410 0%, #131A26 100%); border: 1px solid #FFAB00; border-top: 4px solid #FFAB00; border-radius: 14px; padding: 14px; }
 .audit-card-green { background: linear-gradient(180deg, #0F3D33 0%, #131A26 100%); border: 1px solid #00C853; border-top: 4px solid #00C853; border-radius: 14px; padding: 14px; }
 
-/* ===== HERO STADION GEDE - INI YANG BAKAL KELIATAN JELAS ===== */
+/* ===== HERO STADION GEDE 380px - FIX GEPENG ===== */
 .hero-stadium {
-    height: 300px;
+    height: 380px;
+    min-height: 380px;
     border-radius: 18px;
     border: 3px solid #FBBF24;
     overflow: hidden;
     position: relative;
     margin-bottom: 14px;
     background:
-        radial-gradient(220px 90px at 10% 12%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.85) 22%, rgba(255,255,180,0.25) 48%, transparent 62%),
-        radial-gradient(220px 90px at 30% 12%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.85) 22%, rgba(255,255,180,0.25) 48%, transparent 62%),
-        radial-gradient(220px 90px at 70% 12%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.85) 22%, rgba(255,255,180,0.25) 48%, transparent 62%),
-        radial-gradient(220px 90px at 90% 12%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.85) 22%, rgba(255,255,180,0.25) 48%, transparent 62%),
-        linear-gradient(180deg, #020617 0% 18%, #1E3A8A 18% 48%, #0F5132 48% 52%, #16A34A 52% 78%, #22C55E 78% 100%);
+        radial-gradient(220px 90px at 10% 8%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.85) 22%, transparent 60%),
+        radial-gradient(220px 90px at 50% 8%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.85) 22%, transparent 60%),
+        radial-gradient(220px 90px at 90% 8%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.85) 22%, transparent 60%),
+        linear-gradient(180deg, #020617 0% 15%, #1E3A8A 15% 45%, #0F5132 45% 50%, #16A34A 50% 100%);
     box-shadow: 0 10px 40px rgba(0,0,0,0.6);
 }
-.hero-stadium .tribun { position: absolute; top: 22%; left: 0; right: 0; height: 28%; background: repeating-linear-gradient(90deg, #1E3A8A 0 14px, #1D4ED8 14px 28px, #172554 28px 32px); border-top: 4px solid #FBBF24; border-bottom: 4px solid #FBBF24; opacity: 0.95; }
+.hero-stadium .tribun { position: absolute; top: 18%; left: 0; right: 0; height: 28%; background: repeating-linear-gradient(90deg, #1E3A8A 0 14px, #1D4ED8 14px 28px, #172554 28px 32px); border-top: 4px solid #FBBF24; border-bottom: 4px solid #FBBF24; opacity: 0.95; }
 .hero-stadium .tribun::after { content: "👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥"; position: absolute; top: 6px; left: 0; right: 0; text-align: center; font-size: 22px; letter-spacing: 6px; }
-.hero-stadium .lapangan { position: absolute; bottom: 0; left: 0; right: 0; height: 48%; background: repeating-linear-gradient(90deg, #16A34A 0 80px, #22C55E 80px 160px); border-top: 4px solid #FFFFFF; }
-.hero-stadium .garis-tengah { position: absolute; bottom: 0; left: 50%; width: 4px; height: 48%; background: #FFFFFF; transform: translateX(-50%); }
-.hero-stadium .lingkaran { position: absolute; bottom: 8%; left: 50%; width: 120px; height: 120px; border: 4px solid #FFFFFF; border-radius: 50%; transform: translateX(-50%); }
-.hero-stadium .bola { position: absolute; bottom: 18%; left: 50%; transform: translateX(-50%); font-size: 44px; z-index: 3; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
-.hero-stadium .gawang-kiri { position: absolute; bottom: 18%; left: 2%; width: 70px; height: 90px; border: 5px solid #FFFFFF; border-left: none; background: rgba(255,255,255,0.15); }
-.hero-stadium .gawang-kanan { position: absolute; bottom: 18%; right: 2%; width: 70px; height: 90px; border: 5px solid #FFFFFF; border-right: none; background: rgba(255,255,255,0.15); }
-.hero-stadium .teks { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 52px; text-align: center; z-index: 5; text-shadow: 0 3px 12px rgba(0,0,0,0.9), 0 0 2px #000; }
+.hero-stadium .lapangan { position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: repeating-linear-gradient(90deg, #16A34A 0 80px, #22C55E 80px 160px); border-top: 4px solid #FFFFFF; }
+.hero-stadium .garis-tengah { position: absolute; bottom: 0; left: 50%; width: 4px; height: 50%; background: #FFFFFF; transform: translateX(-50%); }
+.hero-stadium .lingkaran { position: absolute; bottom: 10%; left: 50%; width: 130px; height: 130px; border: 4px solid #FFFFFF; border-radius: 50%; transform: translateX(-50%); }
+.hero-stadium .bola { position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%); font-size: 48px; z-index: 3; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
+.hero-stadium .gawang-kiri { position: absolute; bottom: 18%; left: 2%; width: 80px; height: 100px; border: 5px solid #FFFFFF; border-left: none; background: rgba(255,255,255,0.15); }
+.hero-stadium .gawang-kanan { position: absolute; bottom: 18%; right: 2%; width: 80px; height: 100px; border: 5px solid #FFFFFF; border-right: none; background: rgba(255,255,255,0.15); }
+.hero-stadium .teks { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; z-index: 5; }
+.hero-stadium .teks-box { background: rgba(0,0,0,0.72); border: 2px solid #FBBF24; border-radius: 16px; padding: 16px 28px; max-width: 90%; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -281,7 +282,7 @@ def get_peak_hours_label(now_wita: datetime) -> str:
     return "07:00–13:00 WITA: Jam Transisi (Aktivitas Pertandingan Reguler Rendah)"
 
 def render_dashboard() -> None:
-    # ===== HERO STADION - LANGSUNG KELIATAN, TIDAK KETUTUP KARTU =====
+    # ===== HERO STADION - GEDE + KOTAK HITAM =====
     st.markdown("""
     <div class="hero-stadium">
         <div class="tribun"></div>
@@ -292,9 +293,11 @@ def render_dashboard() -> None:
         <div class="gawang-kanan"></div>
         <div class="bola">⚽</div>
         <div class="teks">
-            <div style="font-size:13px; letter-spacing:4px; font-weight:800; color:#FDE68A;">🏟️ STADION MALAM HARI &nbsp;•&nbsp; LAMPU SOROT MENYALA</div>
-            <div style="font-size:34px; font-weight:900; color:white; line-height:1.1; margin-top:6px;">TRADING BOLA MENIT 60<br><span style="color:#34D399;">LAST GOAL SYSTEM</span></div>
-            <div style="margin-top:8px; background:rgba(0,0,0,0.65); padding:6px 14px; border-radius:20px; font-size:13px; font-weight:700; color:white; border:1px solid #FBBF24;">OVER 0.5 GOAL &nbsp;•&nbsp; ENTRY 60'-66' &nbsp;•&nbsp; SKOR 0-0 &nbsp;•&nbsp; CUT-OFF 12:00 WITA</div>
+            <div class="teks-box">
+                <div style="font-size:14px; letter-spacing:4px; font-weight:800; color:#FDE68A;">🏟️ STADION MALAM HARI • LAMPU SOROT MENYALA</div>
+                <div style="font-size:42px; font-weight:900; color:white; line-height:1.1; margin-top:8px;">TRADING BOLA MENIT 60<br><span style="color:#34D399;">LAST GOAL SYSTEM</span></div>
+                <div style="margin-top:10px; background:#FBBF24; color:black; padding:7px 16px; border-radius:20px; font-size:14px; font-weight:800; display:inline-block;">OVER 0.5 GOAL • ENTRY 60'-66' • SKOR 0-0 • CUT-OFF 12:00 WITA</div>
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
