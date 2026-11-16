@@ -89,7 +89,25 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
+st.markdown("""
+<style>
+/* PAKSA SEMUA JADI HITAM */
+.stApp, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stVerticalBlock"], section {
+    background-color: #0A0A0A !important;
+}
+/* PAKSA SEMUA CARD / BOX PUTIH JADI HITAM */
+div, section, article {
+    background-color: transparent !important;
+}
+[data-testid="stExpander"], [data-testid="stTabs"], [data-testid="stDataFrame"] {
+    background-color: #1A1A1A !important;
+}
+/* TULISAN */
+h1, h2, h3, h4, h5, h6, p, span, label, div {
+    color: #EAEAEA !important;
+}
+</style>
+""", unsafe_allow_html=True)
 st.markdown(
     """
     <style>
