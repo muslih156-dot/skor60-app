@@ -84,27 +84,6 @@ def _try_run_scan():
 WITA_TZ = ZoneInfo(TIMEZONE_NAME)
 
 st.set_page_config(
-st.markdown("""
-<style>
-.stApp {
-    background-color: #0A0A0A;
-    color: #EAEAEA;
-}
-h1, h2, h3, h4, h5, h6, p, span, label, div {
-    color: #EAEAEA !important;
-}
-small, .stCaption {
-    color: #9CA3AF !important;
-}
-div[data-testid="stMetric"], div[data-testid="stContainer"] {
-    background-color: #1A1A1A !important;
-    border: 1px solid #333333 !important;
-}
-section[data-testid="stSidebar"] {
-    background-color: #111111 !important;
-}
-</style>
-""", unsafe_allow_html=True)
     page_title="TRADING BOLA MENIT 60 – LAST GOAL SYSTEM",
     page_icon="⚽",
     layout="wide",
