@@ -1,7 +1,7 @@
 """
 app.py
 TRADING BOLA MENIT 60 – LAST GOAL SYSTEM
-FULL VERSION - Background Stadion FULL 1 Halaman (Bukan Cuma Header)
+FINAL: Background Hitam Rapi + Banner Foto Stadion Asli (Bukan Ijo Neon, Bukan Header Doang)
 """
 
 from datetime import datetime, timezone
@@ -70,7 +70,7 @@ def _try_run_scan():
 WITA_TZ = ZoneInfo(TIMEZONE_NAME)
 
 def style_fig(fig):
-    fig.update_layout(template="plotly_dark", paper_bgcolor="rgba(19,26,38,0.88)", plot_bgcolor="rgba(19,26,38,0.88)", font=dict(color="#E2E8F0", size=12), title_font=dict(color="#FFFFFF", size=14, family="Arial Black"), xaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")), yaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")), legend=dict(bgcolor="#131A26", font=dict(color="#E2E8F0")), margin=dict(l=10, r=10, t=50, b=10))
+    fig.update_layout(template="plotly_dark", paper_bgcolor="#131A26", plot_bgcolor="#131A26", font=dict(color="#E2E8F0", size=12), title_font=dict(color="#FFFFFF", size=14, family="Arial Black"), xaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")), yaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")), legend=dict(bgcolor="#131A26", font=dict(color="#E2E8F0")), margin=dict(l=10, r=10, t=50, b=10))
     return fig
 
 def style_dark_table(df):
@@ -142,7 +142,7 @@ def render_match_table_html(table_rows):
         html.append(f'<th style="{header_style}">{h}</th>')
     html.append('</tr></thead><tbody>')
     for i, r in enumerate(table_rows):
-        bg_row = "rgba(26,36,54,0.88)" if i % 2 == 0 else "rgba(19,26,38,0.88)"
+        bg_row = "#1A2436" if i % 2 == 0 else "#131A26"
         badge = str(r["Badge"]).upper()
         if badge == "MAJOR":
             badge_html = pill("MAJOR", "#2979FF")
@@ -194,62 +194,68 @@ def render_match_table_html(table_rows):
 
 st.set_page_config(page_title="TRADING BOLA MENIT 60 – LAST GOAL SYSTEM", page_icon="⚽", layout="wide", initial_sidebar_state="expanded")
 
-# ===== BACKGROUND STADION FULL 1 HALAMAN - BUKAN CUMA HEADER =====
+# ===== BACKGROUND BALIK HITAM RAPI - NGGAK IJO LAGI =====
 st.markdown("""
 <style>
-/* 1. Background full halaman: lampu di atas, tribun di tengah-atas, lapangan hijau di bawah - nempel terus walau di-scroll */
-.stApp, [data-testid="stAppViewContainer"] {
-    background:
-        radial-gradient(320px 110px at 10% 0%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.9) 25%, transparent 60%),
-        radial-gradient(320px 110px at 50% 0%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.9) 25%, transparent 60%),
-        radial-gradient(320px 110px at 90% 0%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.9) 25%, transparent 60%),
-        linear-gradient(180deg, #020617 0% 6%, #1E3A8A 6% 18%, #0F5132 18% 20%, #16A34A 20% 100%) !important;
-    background-attachment: fixed !important;
-    background-size: cover !important;
-    background-color: #16A34A !important;
-}
-[data-testid="stHeader"] { background: transparent !important; }
-[data-testid="stMainBlockContainer"] { background: transparent !important; padding-top: 12px !important; max-width: 100% !important; }
+.stApp, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] { background: #0A0F1A !important; background-color: #0A0F1A !important; }
+[data-testid="stMainBlockContainer"] { padding-top: 10px !important; max-width: 100% !important; }
 h1, h2, h3, h4, p, span, div, label, li { color: #E2E8F0 !important; }
-small, .stCaption, [data-testid="stCaptionContainer"] { color: #E2E8F0 !important; }
-h3 { border-left: 5px solid #FBBF24 !important; padding-left: 12px !important; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
-/* 2. Kartu dibuat 0.88 - agak transparan biar stadionnya ngintip dari belakang kartu, bukan ketutup total */
-[data-testid="stExpander"], [data-testid="stTabs"], [data-testid="stSelectbox"], [data-testid="stDataFrame"] { background-color: rgba(10,15,26,0.88) !important; border: 2px solid #FBBF24 !important; border-radius: 14px !important; backdrop-filter: blur(2px); }
-[data-testid="stExpander"] summary, button[data-baseweb="tab"] { color: #E2E8F0 !important; background-color: rgba(10,15,26,0.88) !important; }
+small, .stCaption, [data-testid="stCaptionContainer"] { color: #94A3B8 !important; }
+h3 { border-left: 5px solid #10B981 !important; padding-left: 12px !important; }
+[data-testid="stExpander"], [data-testid="stTabs"], [data-testid="stSelectbox"], [data-testid="stDataFrame"] { background-color: #131A26 !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; }
+[data-testid="stExpander"] summary, button[data-baseweb="tab"] { color: #E2E8F0 !important; background-color: #131A26 !important; }
 button[data-baseweb="tab"][aria-selected="true"] { background-color: #1E293B !important; color: #FFFFFF !important; border-bottom: 3px solid #10B981 !important; }
 div[data-baseweb="select"] > div, input { background-color: #1A2436 !important; color: #FFFFFF !important; border-color: #2A3550 !important; }
 .stButton > button { background: linear-gradient(90deg, #0EA5E9, #10B981) !important; color: #FFFFFF !important; border: none !important; font-weight: 700 !important; border-radius: 10px !important; box-shadow: 0 4px 18px rgba(16,185,129,0.35) !important; }
-[data-testid="stDataFrame"], [data-testid="stDataFrame"] > div, [data-testid="stDataFrame"] iframe { background-color: rgba(10,15,26,0.88) !important; color: #E2E8F0 !important; }
-[data-testid="stPlotlyChart"], [data-testid="stPlotlyChart"] > div { background-color: rgba(10,15,26,0.88) !important; border: 2px solid #FBBF24 !important; border-radius: 14px !important; padding: 8px !important; box-shadow: 0 6px 24px rgba(0,0,0,0.55) !important; }
-[data-testid="stAlert"] { background-color: rgba(10,15,26,0.88) !important; color: #E2E8F0 !important; border: 1px solid #FBBF24 !important; border-left: 5px solid #10B981 !important; border-radius: 12px !important; }
+[data-testid="stDataFrame"], [data-testid="stDataFrame"] > div, [data-testid="stDataFrame"] iframe { background-color: #131A26 !important; color: #E2E8F0 !important; }
+[data-testid="stPlotlyChart"], [data-testid="stPlotlyChart"] > div { background-color: #131A26 !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; padding: 8px !important; box-shadow: 0 6px 24px rgba(0,0,0,0.35) !important; }
+[data-testid="stAlert"] { background-color: #131A26 !important; color: #E2E8F0 !important; border: 1px solid #2A3550 !important; border-left: 5px solid #10B981 !important; border-radius: 12px !important; }
 [data-testid="stAlert"] p, [data-testid="stAlert"] span, [data-testid="stAlert"] div { color: #E2E8F0 !important; }
-[data-testid="stMetric"] { background-color: rgba(10,15,26,0.88) !important; border: 1px solid #FBBF24 !important; border-radius: 14px !important; padding: 12px !important; }
+[data-testid="stMetric"] { background-color: #131A26 !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; padding: 12px !important; }
 [data-testid="stMetricValue"], [data-testid="stMetricLabel"] { color: #FFFFFF !important; }
-.section-card { background: rgba(10,15,26,0.88) !important; border: 1px solid #FBBF24; border-left: 5px solid #F59E0B; border-radius: 12px; padding: 12px 16px; margin: 18px 0 10px 0; }
+.section-card { background: linear-gradient(90deg, #1A2436 0%, #131A26 100%); border: 1px solid #2A3550; border-left: 5px solid #F59E0B; border-radius: 12px; padding: 12px 16px; margin: 18px 0 10px 0; }
 .section-card-blue { border-left: 5px solid #3B82F6 !important; }
 .section-card-green { border-left: 5px solid #10B981 !important; }
 .section-card-pink { border-left: 5px solid #EC4899 !important; }
-.audit-card-blue { background: rgba(30,58,95,0.92) !important; border: 1px solid #3B82F6; border-top: 4px solid #3B82F6; border-radius: 14px; padding: 14px; }
-.audit-card-gold { background: rgba(74,52,16,0.92) !important; border: 1px solid #FFAB00; border-top: 4px solid #FFAB00; border-radius: 14px; padding: 14px; }
-.audit-card-green { background: rgba(15,61,51,0.92) !important; border: 1px solid #00C853; border-top: 4px solid #00C853; border-radius: 14px; padding: 14px; }
-[data-testid="stSidebar"] { background: #020617 !important; }
-[data-testid="stSidebar"] * { color: #E2E8F0 !important; }
-/* Garis lapangan di background - biar kerasa lapangan beneran di seluruh halaman */
-.stApp::after { content: ""; position: fixed; left: 50%; top: 20%; bottom: 0; width: 4px; background: rgba(255,255,255,0.25); transform: translateX(-50%); pointer-events: none; z-index: 0; }
+.audit-card-blue { background: linear-gradient(180deg, #1E3A5F 0%, #131A26 100%); border: 1px solid #3B82F6; border-top: 4px solid #3B82F6; border-radius: 14px; padding: 14px; }
+.audit-card-gold { background: linear-gradient(180deg, #4A3410 0%, #131A26 100%); border: 1px solid #FFAB00; border-top: 4px solid #FFAB00; border-radius: 14px; padding: 14px; }
+.audit-card-green { background: linear-gradient(180deg, #0F3D33 0%, #131A26 100%); border: 1px solid #00C853; border-top: 4px solid #00C853; border-radius: 14px; padding: 14px; }
+
+/* ===== BANNER FOTO STADION ASLI - 420px, BUKAN GAMBAR KODE ===== */
+.hero-photo {
+    height: 420px;
+    min-height: 420px;
+    border-radius: 18px;
+    border: 3px solid #FBBF24;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 16px;
+    background: #020617;
+}
+.hero-photo img.bg-foto {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center 35%;
+}
+.hero-photo .overlay-gelap {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.75) 100%);
+}
+.hero-photo .teks { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; z-index: 5; padding: 16px; }
+.hero-photo .teks-box { background: rgba(0,0,0,0.68); border: 2px solid #FBBF24; border-radius: 18px; padding: 20px 32px; max-width: 92%; }
+.hero-photo .info-bar { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; font-size: 12px; font-weight: 700; color: #E2E8F0; }
+.hero-photo .info-bar span { background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.3); padding: 5px 10px; border-radius: 20px; }
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
 <style>
-/* Judul di atas background stadion - dikasih kotak hitam biar kebaca */
-.top-title-box { background: rgba(0,0,0,0.78); border: 2px solid #FBBF24; border-radius: 18px; padding: 18px 28px; text-align: center; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
-.metric-card { background: rgba(26,36,54,0.88) !important; color: #f8fafc; padding: 1.1rem; border-radius: 14px; border: 1px solid #FBBF24; height: 100%; box-shadow: 0 6px 20px rgba(0,0,0,0.40); }
+.metric-card { background: linear-gradient(180deg, #1A2436 0%, #131A26 100%); color: #f8fafc; padding: 1.1rem; border-radius: 14px; border: 1px solid #2A3550; height: 100%; box-shadow: 0 6px 20px rgba(0,0,0,0.30); }
 .metric-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: #94A3B8; margin-bottom: 0.35rem; }
 .metric-value { font-size: 1.55rem; font-weight: 800; color: #ffffff; }
 .metric-sub { font-size: 0.82rem; color: #CBD5E1; margin-top: 0.3rem; }
 .profit-green { color: #34D399 !important; } .profit-red { color: #F87171 !important; }
 .accent-blue { color: #60A5FA !important; } .accent-gold { color: #FBBF24 !important; } .accent-purple { color: #A78BFA !important; }
-.insight-card { background: rgba(26,36,54,0.88) !important; border: 1px solid #FBBF24; border-radius: 14px; padding: 14px; text-align: center; }
+.insight-card { background: linear-gradient(180deg, #1A2436 0%, #131A26 100%); border: 1px solid #2A3550; border-radius: 14px; padding: 14px; text-align: center; }
 .insight-label { font-size: 0.75rem; letter-spacing: 0.08em; color: #94A3B8; text-transform: uppercase; }
 .insight-value { font-size: 1.35rem; font-weight: 800; margin-top: 6px; }
 .insight-sub { font-size: 0.80rem; color: #CBD5E1; margin-top: 4px; }
@@ -312,13 +318,25 @@ def render_dashboard() -> None:
     last_scan_wita = scan_meta.get("scan_timestamp_wita") or "BELUM TERSEDIA"
     source_status = scan_meta.get("source_status") or "NEVER_SCANNED"
 
-    # ===== JUDUL DOANG DI ATAS BACKGROUND - BUKAN HEADER STADION LAGI =====
+    # ===== BANNER FOTO STADION ASLI =====
     st.markdown(f"""
-    <div class="top-title-box">
-        <div style="font-size:14px; letter-spacing:4px; font-weight:800; color:#FDE68A;">🏟️ STADION MALAM HARI • LAMPU SOROT MENYALA • BACKGROUND FULL 1 HALAMAN</div>
-        <div style="font-size:44px; font-weight:900; color:white; line-height:1.05; margin-top:8px;">TRADING BOLA MENIT 60<br><span style="color:#34D399;">LAST GOAL SYSTEM</span></div>
-        <div style="margin-top:10px; background:#FBBF24; color:black; padding:7px 16px; border-radius:20px; font-size:14px; font-weight:800; display:inline-block;">OVER 0.5 GOAL • ENTRY 60'-66' • SKOR 0-0 • CUT-OFF 12:00 WITA</div>
-        <div style="margin-top:10px; font-size:12px; color:#CBD5E1;">🟢 {source_status} &nbsp;•&nbsp; 📡 ESPN API &nbsp;•&nbsp; 🕒 Last Scan: {last_scan_wita} &nbsp;•&nbsp; ⏰ WITA: {now_wita.strftime('%Y-%m-%d %H:%M:%S')} &nbsp;•&nbsp; ⚽ Total: {len(all_records)} Match</div>
+    <div class="hero-photo">
+        <img class="bg-foto" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Allianz-Arena-Munich-2012.jpg/1280px-Allianz-Arena-Munich-2012.jpg" alt="Stadion" />
+        <div class="overlay-gelap"></div>
+        <div class="teks">
+            <div class="teks-box">
+                <div style="font-size:14px; letter-spacing:4px; font-weight:800; color:#FDE68A;">🏟️ STADION MALAM HARI • FOTO ASLI</div>
+                <div style="font-size:48px; font-weight:900; color:white; line-height:1.05; margin-top:10px;">TRADING BOLA MENIT 60<br><span style="color:#34D399;">LAST GOAL SYSTEM</span></div>
+                <div style="margin-top:12px; background:#FBBF24; color:black; padding:8px 18px; border-radius:20px; font-size:14px; font-weight:800; display:inline-block;">OVER 0.5 GOAL • ENTRY 60'-66' • SKOR 0-0 • CUT-OFF 12:00 WITA</div>
+                <div class="info-bar">
+                    <span>🟢 {source_status}</span>
+                    <span>📡 ESPN API</span>
+                    <span>🕒 Last Scan: {last_scan_wita}</span>
+                    <span>⏰ WITA: {now_wita.strftime('%Y-%m-%d %H:%M:%S')}</span>
+                    <span>⚽ Total: {len(all_records)} Match</span>
+                </div>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
