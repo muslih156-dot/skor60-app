@@ -1,7 +1,7 @@
 """
 app.py
 TRADING BOLA MENIT 60 – LAST GOAL SYSTEM
-FULL VERSION - Background Stadion Malam TERANG (Fix Gagal Kemarin)
+FIX FINAL: Background Stadion CSS Murni (Tanpa Foto Luar, Dijamin Muncul)
 """
 
 from datetime import datetime, timezone
@@ -70,7 +70,7 @@ def _try_run_scan():
 WITA_TZ = ZoneInfo(TIMEZONE_NAME)
 
 def style_fig(fig):
-    fig.update_layout(template="plotly_dark", paper_bgcolor="rgba(19,26,38,0.95)", plot_bgcolor="rgba(19,26,38,0.95)", font=dict(color="#E2E8F0", size=12), title_font=dict(color="#FFFFFF", size=14, family="Arial Black"), xaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")), yaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")), legend=dict(bgcolor="#131A26", font=dict(color="#E2E8F0")), margin=dict(l=10, r=10, t=50, b=10))
+    fig.update_layout(template="plotly_dark", paper_bgcolor="rgba(19,26,38,0.92)", plot_bgcolor="rgba(19,26,38,0.92)", font=dict(color="#E2E8F0", size=12), title_font=dict(color="#FFFFFF", size=14, family="Arial Black"), xaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")), yaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")), legend=dict(bgcolor="#131A26", font=dict(color="#E2E8F0")), margin=dict(l=10, r=10, t=50, b=10))
     return fig
 
 def style_dark_table(df):
@@ -142,7 +142,7 @@ def render_match_table_html(table_rows):
         html.append(f'<th style="{header_style}">{h}</th>')
     html.append('</tr></thead><tbody>')
     for i, r in enumerate(table_rows):
-        bg_row = "rgba(26,36,54,0.95)" if i % 2 == 0 else "rgba(19,26,38,0.95)"
+        bg_row = "rgba(26,36,54,0.92)" if i % 2 == 0 else "rgba(19,26,38,0.92)"
         badge = str(r["Badge"]).upper()
         if badge == "MAJOR":
             badge_html = pill("MAJOR", "#2979FF")
@@ -194,56 +194,79 @@ def render_match_table_html(table_rows):
 
 st.set_page_config(page_title="TRADING BOLA MENIT 60 – LAST GOAL SYSTEM", page_icon="⚽", layout="wide", initial_sidebar_state="expanded")
 
-# ===== BACKGROUND STADION MALAM - FIX: LEBIH TERANG BIAR KELIATAN =====
+# ===== BACKGROUND STADION CSS MURNI - TANPA FOTO, PASTI MUNCUL =====
 st.markdown("""
 <style>
-.stApp, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] {
-    background: linear-gradient(rgba(5, 8, 15, 0.62), rgba(5, 8, 15, 0.72)), url("https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2000&auto=format&fit=crop") !important;
-    background-size: cover !important;
-    background-position: center top !important;
-    background-attachment: fixed !important;
-    background-color: #0A0F1A !important;
+/* 1. Background dasar: langit malam stadion */
+html, body, .stApp {
+    background: #020617 !important;
 }
-[data-testid="stMainBlockContainer"] { padding-top: 18px !important; max-width: 100% !important; }
+/* 2. Lapisan stadion: lampu sorot + tribun + rumput - semua pakai gradient, tanpa foto */
+[data-testid="stAppViewContainer"] {
+    background:
+        radial-gradient(500px 220px at 12% 0%, rgba(255, 255, 200, 0.95) 0%, rgba(255, 255, 200, 0.45) 28%, transparent 55%),
+        radial-gradient(500px 220px at 50% 0%, rgba(255, 255, 220, 1) 0%, rgba(255, 255, 200, 0.50) 30%, transparent 58%),
+        radial-gradient(500px 220px at 88% 0%, rgba(255, 255, 200, 0.95) 0%, rgba(255, 255, 200, 0.45) 28%, transparent 55%),
+        radial-gradient(900px 300px at 50% -80px, rgba(147, 197, 253, 0.55) 0%, transparent 70%),
+        linear-gradient(180deg, #020617 0%, #0B1B33 22%, #0F2A1A 62%, #14532D 78%, #15803D 100%) !important;
+    background-attachment: fixed !important;
+}
+/* 3. Konten utama dibuat transparan biar stadion di belakang keliatan di celah-celahnya */
+[data-testid="stMainBlockContainer"] {
+    background: transparent !important;
+    padding-top: 18px !important;
+    max-width: 100% !important;
+}
+[data-testid="stHeader"] { background: transparent !important; }
+[data-testid="stToolbar"] { background: transparent !important; }
 h1, h2, h3, h4, p, span, div, label, li { color: #E2E8F0 !important; }
-small, .stCaption, [data-testid="stCaptionContainer"] { color: #94A3B8 !important; }
+small, .stCaption, [data-testid="stCaptionContainer"] { color: #E2E8F0 !important; }
 h3 { border-left: 5px solid #10B981 !important; padding-left: 12px !important; }
-[data-testid="stExpander"], [data-testid="stTabs"], [data-testid="stSelectbox"], [data-testid="stDataFrame"] { background-color: rgba(19,26,38,0.95) !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; backdrop-filter: blur(4px) !important; }
-[data-testid="stExpander"] summary, button[data-baseweb="tab"] { color: #E2E8F0 !important; background-color: rgba(19,26,38,0.95) !important; }
+/* 4. Kartu dibuat 0.92 (tidak 0.95) + garis putih biar tetap tegas di atas stadion */
+[data-testid="stExpander"], [data-testid="stTabs"], [data-testid="stSelectbox"], [data-testid="stDataFrame"] { background-color: rgba(10, 18, 35, 0.92) !important; border: 1px solid #3B82F6 !important; border-radius: 14px !important; }
+[data-testid="stExpander"] summary, button[data-baseweb="tab"] { color: #E2E8F0 !important; background-color: rgba(10,18,35,0.92) !important; }
 button[data-baseweb="tab"][aria-selected="true"] { background-color: #1E293B !important; color: #FFFFFF !important; border-bottom: 3px solid #10B981 !important; }
 div[data-baseweb="select"] > div, input { background-color: #1A2436 !important; color: #FFFFFF !important; border-color: #2A3550 !important; }
 .stButton > button { background: linear-gradient(90deg, #0EA5E9, #10B981) !important; color: #FFFFFF !important; border: none !important; font-weight: 700 !important; border-radius: 10px !important; box-shadow: 0 4px 18px rgba(16,185,129,0.35) !important; }
-[data-testid="stDataFrame"], [data-testid="stDataFrame"] > div, [data-testid="stDataFrame"] iframe { background-color: rgba(19,26,38,0.95) !important; color: #E2E8F0 !important; }
-[data-testid="stPlotlyChart"], [data-testid="stPlotlyChart"] > div { background-color: rgba(19,26,38,0.95) !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; padding: 8px !important; box-shadow: 0 6px 24px rgba(0,0,0,0.45) !important; backdrop-filter: blur(4px) !important; }
-[data-testid="stAlert"] { background-color: rgba(19,26,38,0.95) !important; color: #E2E8F0 !important; border: 1px solid #2A3550 !important; border-left: 5px solid #10B981 !important; border-radius: 12px !important; }
+[data-testid="stDataFrame"], [data-testid="stDataFrame"] > div, [data-testid="stDataFrame"] iframe { background-color: rgba(10,18,35,0.92) !important; color: #E2E8F0 !important; }
+[data-testid="stPlotlyChart"], [data-testid="stPlotlyChart"] > div { background-color: rgba(10,18,35,0.92) !important; border: 1px solid #3B82F6 !important; border-radius: 14px !important; padding: 8px !important; box-shadow: 0 6px 24px rgba(0,0,0,0.55) !important; }
+[data-testid="stAlert"] { background-color: rgba(10,18,35,0.92) !important; color: #E2E8F0 !important; border: 1px solid #2A3550 !important; border-left: 5px solid #10B981 !important; border-radius: 12px !important; }
 [data-testid="stAlert"] p, [data-testid="stAlert"] span, [data-testid="stAlert"] div { color: #E2E8F0 !important; }
-[data-testid="stMetric"] { background-color: rgba(19,26,38,0.95) !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; padding: 12px !important; }
+[data-testid="stMetric"] { background-color: rgba(10,18,35,0.92) !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; padding: 12px !important; }
 [data-testid="stMetricValue"], [data-testid="stMetricLabel"] { color: #FFFFFF !important; }
-.section-card { background: linear-gradient(90deg, rgba(26,36,54,0.95) 0%, rgba(19,26,38,0.95) 100%) !important; border: 1px solid #2A3550; border-left: 5px solid #F59E0B; border-radius: 12px; padding: 12px 16px; margin: 18px 0 10px 0; backdrop-filter: blur(4px); }
+.section-card { background: linear-gradient(90deg, rgba(26,36,54,0.92) 0%, rgba(10,18,35,0.92) 100%) !important; border: 1px solid #3B82F6; border-left: 5px solid #F59E0B; border-radius: 12px; padding: 12px 16px; margin: 18px 0 10px 0; }
 .section-card-blue { border-left: 5px solid #3B82F6 !important; }
 .section-card-green { border-left: 5px solid #10B981 !important; }
 .section-card-pink { border-left: 5px solid #EC4899 !important; }
-.audit-card-blue { background: linear-gradient(180deg, rgba(30,58,95,0.95) 0%, rgba(19,26,38,0.95) 100%); border: 1px solid #3B82F6; border-top: 4px solid #3B82F6; border-radius: 14px; padding: 14px; }
-.audit-card-gold { background: linear-gradient(180deg, rgba(74,52,16,0.95) 0%, rgba(19,26,38,0.95) 100%); border: 1px solid #FFAB00; border-top: 4px solid #FFAB00; border-radius: 14px; padding: 14px; }
-.audit-card-green { background: linear-gradient(180deg, rgba(15,61,51,0.95) 0%, rgba(19,26,38,0.95) 100%); border: 1px solid #00C853; border-top: 4px solid #00C853; border-radius: 14px; padding: 14px; }
-[data-testid="stSidebar"] { background: linear-gradient(rgba(5,8,15,0.70), rgba(5,8,15,0.82)), url("https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1000&auto=format&fit=crop") !important; background-size: cover !important; background-position: center !important; }
+.audit-card-blue { background: linear-gradient(180deg, rgba(30,58,95,0.95) 0%, rgba(10,18,35,0.95) 100%); border: 1px solid #3B82F6; border-top: 4px solid #3B82F6; border-radius: 14px; padding: 14px; }
+.audit-card-gold { background: linear-gradient(180deg, rgba(74,52,16,0.95) 0%, rgba(10,18,35,0.95) 100%); border: 1px solid #FFAB00; border-top: 4px solid #FFAB00; border-radius: 14px; padding: 14px; }
+.audit-card-green { background: linear-gradient(180deg, rgba(15,61,51,0.95) 0%, rgba(10,18,35,0.95) 100%); border: 1px solid #00C853; border-top: 4px solid #00C853; border-radius: 14px; padding: 14px; }
+[data-testid="stSidebar"] { background: #020617 !important; }
 [data-testid="stSidebar"] * { color: #E2E8F0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
 <style>
-.main-header { background: linear-gradient(90deg, rgba(15,23,42,0.85) 0%, rgba(30,58,95,0.75) 45%, rgba(15,61,51,0.85) 100%), url("https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2000&auto=format&fit=crop"); background-size: cover; background-position: center 30%; color: #f8fafc; padding: 1.4rem 1.8rem; border-radius: 16px; border-left: 6px solid #10B981; border: 1px solid #2A3550; box-shadow: 0 8px 30px rgba(0,0,0,0.55); margin-bottom: 1.2rem; backdrop-filter: blur(2px); }
-.metric-card { background: linear-gradient(180deg, rgba(26,36,54,0.95) 0%, rgba(19,26,38,0.95) 100%); color: #f8fafc; padding: 1.1rem; border-radius: 14px; border: 1px solid #2A3550; height: 100%; box-shadow: 0 6px 20px rgba(0,0,0,0.40); backdrop-filter: blur(4px); }
+.main-header {
+    background: linear-gradient(90deg, rgba(2,6,23,0.55) 0%, rgba(30,58,95,0.45) 45%, rgba(15,61,51,0.55) 100%), radial-gradient(400px 180px at 15% 0%, rgba(255,255,200,0.90) 0%, transparent 60%), radial-gradient(400px 180px at 85% 0%, rgba(255,255,200,0.90) 0%, transparent 60%), linear-gradient(180deg, #0B1B33 0%, #14532D 100%);
+    background-size: cover; background-position: center;
+    color: #f8fafc; padding: 1.4rem 1.8rem; border-radius: 16px; border: 2px solid #FBBF24; border-left: 6px solid #10B981; box-shadow: 0 8px 30px rgba(0,0,0,0.55); margin-bottom: 1.2rem;
+}
+.metric-card { background: linear-gradient(180deg, rgba(26,36,54,0.92) 0%, rgba(10,18,35,0.92) 100%); color: #f8fafc; padding: 1.1rem; border-radius: 14px; border: 1px solid #2A3550; height: 100%; box-shadow: 0 6px 20px rgba(0,0,0,0.40); }
 .metric-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: #94A3B8; margin-bottom: 0.35rem; }
 .metric-value { font-size: 1.55rem; font-weight: 800; color: #ffffff; }
 .metric-sub { font-size: 0.82rem; color: #CBD5E1; margin-top: 0.3rem; }
 .profit-green { color: #34D399 !important; } .profit-red { color: #F87171 !important; }
 .accent-blue { color: #60A5FA !important; } .accent-gold { color: #FBBF24 !important; } .accent-purple { color: #A78BFA !important; }
-.insight-card { background: linear-gradient(180deg, rgba(26,36,54,0.95) 0%, rgba(19,26,38,0.95) 100%); border: 1px solid #2A3550; border-radius: 14px; padding: 14px; text-align: center; backdrop-filter: blur(4px); }
+.insight-card { background: linear-gradient(180deg, rgba(26,36,54,0.92) 0%, rgba(10,18,35,0.92) 100%); border: 1px solid #2A3550; border-radius: 14px; padding: 14px; text-align: center; }
 .insight-label { font-size: 0.75rem; letter-spacing: 0.08em; color: #94A3B8; text-transform: uppercase; }
 .insight-value { font-size: 1.35rem; font-weight: 800; margin-top: 6px; }
 .insight-sub { font-size: 0.80rem; color: #CBD5E1; margin-top: 4px; }
+/* Banner stadion kecil di atas header biar langsung keliatan stadionnya */
+.stadium-banner { background: linear-gradient(180deg, #020617 0%, #0B1B33 35%, #14532D 75%, #22C55E 100%); border: 2px solid #FBBF24; border-radius: 14px; padding: 10px 14px; margin-bottom: 10px; text-align: center; position: relative; overflow: hidden; }
+.stadium-banner::before { content: "💡 💡 💡"; position: absolute; top: 2px; left: 14px; font-size: 18px; letter-spacing: 18px; opacity: 0.95; }
+.stadium-banner::after { content: "💡 💡 💡"; position: absolute; top: 2px; right: 14px; font-size: 18px; letter-spacing: 18px; opacity: 0.95; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -263,6 +286,7 @@ def get_peak_hours_label(now_wita: datetime) -> str:
     return "07:00–13:00 WITA: Jam Transisi (Aktivitas Pertandingan Reguler Rendah)"
 
 def render_dashboard() -> None:
+    st.markdown('<div class="stadium-banner"><span style="font-size:18px; font-weight:800; color:white;">🏟️ STADION MALAM HARI &nbsp;•&nbsp; LAMPU SOROT MENYALA &nbsp;•&nbsp; MENIT 60 - LAST GOAL SYSTEM ⚽</span><br><span style="font-size:12px; color:#FEF08A;">Rumput hijau di bawah, lampu stadion di atas — background ini digambar pakai kode, bukan foto, jadi pasti muncul</span></div>', unsafe_allow_html=True)
     st.markdown("### 🔄 Live Scan ESPN")
     c_scan1, c_scan2, c_scan3 = st.columns([1, 1, 3])
     with c_scan1:
@@ -320,7 +344,7 @@ def render_dashboard() -> None:
     last_scan_wita = scan_meta.get("scan_timestamp_wita") or "BELUM TERSEDIA"
     source_status = scan_meta.get("source_status") or "NEVER_SCANNED"
     last_db_update_str = "DARI REPO LAMA skor60 (via data_loader.py)"
-    st.markdown(f"""<div class="main-header"><h2 style="margin:0; font-weight:800;">⚽ TRADING BOLA MENIT 60 — <span style="color:#34D399;">LAST GOAL SYSTEM</span></h2><p style="margin:6px 0 10px 0; color:#94A3B8;">Market: <b style="color:#FBBF24;">OVER 0.5 GOAL AFTER ENTRY (Menit 60'–66', Skor Entry 0-0)</b> | Cut-Off Trading Day: <b style="color:#fff;">12:00 WITA</b></p><div style="display:flex; flex-wrap:wrap; gap:18px; font-size:0.86rem;"><span>🟢 <b>System Status:</b> {source_status}</span><span>📡 <b>Data Source:</b> ESPN API (All + Multi-League)</span><span>🕒 <b>Last Scan:</b> {last_scan_wita}</span><span>💾 <b>Last DB Update:</b> {last_db_update_str}</span><span>⏰ <b>Current WITA:</b> {now_wita.strftime('%Y-%m-%d %H:%M:%S')}</span><span>⚽ <b>Total Matches:</b> {len(all_records)}</span></div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="main-header"><h2 style="margin:0; font-weight:800;">⚽ TRADING BOLA MENIT 60 — <span style="color:#34D399;">LAST GOAL SYSTEM</span></h2><p style="margin:6px 0 10px 0; color:#E2E8F0;">Market: <b style="color:#FBBF24;">OVER 0.5 GOAL AFTER ENTRY (Menit 60'–66', Skor Entry 0-0)</b> | Cut-Off Trading Day: <b style="color:#fff;">12:00 WITA</b></p><div style="display:flex; flex-wrap:wrap; gap:18px; font-size:0.86rem;"><span>🟢 <b>System Status:</b> {source_status}</span><span>📡 <b>Data Source:</b> ESPN API (All + Multi-League)</span><span>🕒 <b>Last Scan:</b> {last_scan_wita}</span><span>💾 <b>Last DB Update:</b> {last_db_update_str}</span><span>⏰ <b>Current WITA:</b> {now_wita.strftime('%Y-%m-%d %H:%M:%S')}</span><span>⚽ <b>Total Matches:</b> {len(all_records)}</span></div></div>""", unsafe_allow_html=True)
     st.info(f"🕒 **Panduan Monitoring Jam Aktif (WITA):** {get_peak_hours_label(now_wita)} *(Panduan monitoring, bukan jaminan jumlah pertandingan).* Pertandingan LIVE terdeteksi pada scan terakhir: **{scan_meta.get('live_matches_seen', 0)}**")
     sim_stats = stats["simulated"]
     act_stats = stats["actual"]
