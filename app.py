@@ -222,8 +222,9 @@ div[data-baseweb="select"] > div, input { background-color: #1A2436 !important; 
 
 /* ===== HERO STADION 480px - GEDE, HEADER GANDA DIHAPUS ===== */
 .hero-stadium {
-    height: 480px;
-    min-height: 480px;
+    height: 38vw;
+    min-height: 380px;
+    max-height: 620px;
     border-radius: 18px;
     border: 3px solid #FBBF24;
     overflow: hidden;
