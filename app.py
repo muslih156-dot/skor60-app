@@ -1,7 +1,7 @@
 """
 app.py
 TRADING BOLA MENIT 60 – LAST GOAL SYSTEM
-FINAL FIX: Foto Eksternal Ke-Block, Balik ke Gambar Kode Tapi Warna Gelap Realistis (Bukan Ijo Neon)
+FINAL FIX: Dropdown Filter Hitam - Teks Putih Kebaca (Bukan Putih Ketemu Putih)
 """
 
 from datetime import datetime, timezone
@@ -204,7 +204,30 @@ h3 { border-left: 5px solid #10B981 !important; padding-left: 12px !important; }
 [data-testid="stExpander"], [data-testid="stTabs"], [data-testid="stSelectbox"], [data-testid="stDataFrame"] { background-color: #131A26 !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; }
 [data-testid="stExpander"] summary, button[data-baseweb="tab"] { color: #E2E8F0 !important; background-color: #131A26 !important; }
 button[data-baseweb="tab"][aria-selected="true"] { background-color: #1E293B !important; color: #FFFFFF !important; border-bottom: 3px solid #10B981 !important; }
-div[data-baseweb="select"] > div, input { background-color: #1A2436 !important; color: #FFFFFF !important; border-color: #2A3550 !important; }
+
+/* ===== FIX DROPDOWN FILTER - INI YANG BIKIN JELEK KEMARIN ===== */
+/* Kotak selectnya */
+div[data-baseweb="select"] > div { background-color: #1A2436 !important; border: 1px solid #3B82F6 !important; border-radius: 10px !important; color: #FFFFFF !important; }
+div[data-baseweb="select"] span, div[data-baseweb="select"] div { color: #FFFFFF !important; }
+div[data-baseweb="select"] svg { fill: #FFFFFF !important; color: #FFFFFF !important; }
+input { background-color: #1A2436 !important; color: #FFFFFF !important; border-color: #2A3550 !important; }
+/* Menu dropdown yang kebuka - WAJIB HITAM, BUKAN PUTIH */
+div[data-baseweb="popover"], div[data-baseweb="menu"], ul[data-baseweb="menu"], div[role="listbox"] {
+    background-color: #0F172A !important; background: #0F172A !important; border: 2px solid #3B82F6 !important; border-radius: 12px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important;
+}
+li[data-baseweb="option"], div[data-baseweb="option"], li[role="option"], div[role="option"] {
+    background-color: #0F172A !important; background: #0F172A !important; color: #FFFFFF !important; font-weight: 700 !important; font-size: 14px !important; padding: 10px 14px !important;
+}
+li[data-baseweb="option"] *, div[data-baseweb="option"] *, li[role="option"] *, div[role="option"] * { color: #FFFFFF !important; background: transparent !important; }
+li[data-baseweb="option"]:hover, div[data-baseweb="option"]:hover, li[role="option"]:hover, div[role="option"]:hover {
+    background-color: #1E3A5F !important; background: #1E3A5F !important; color: #FFFFFF !important;
+}
+li[data-baseweb="option"][aria-selected="true"], div[data-baseweb="option"][aria-selected="true"] {
+    background-color: #2563EB !important; background: #2563EB !important; color: #FFFFFF !important;
+}
+/* Label di atas filter */
+[data-testid="stSelectbox"] label, [data-testid="stSelectbox"] label p { color: #FFFFFF !important; font-weight: 700 !important; font-size: 13px !important; }
+
 .stButton > button { background: linear-gradient(90deg, #0EA5E9, #10B981) !important; color: #FFFFFF !important; border: none !important; font-weight: 700 !important; border-radius: 10px !important; box-shadow: 0 4px 18px rgba(16,185,129,0.35) !important; }
 [data-testid="stDataFrame"], [data-testid="stDataFrame"] > div, [data-testid="stDataFrame"] iframe { background-color: #131A26 !important; color: #E2E8F0 !important; }
 [data-testid="stPlotlyChart"], [data-testid="stPlotlyChart"] > div { background-color: #131A26 !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; padding: 8px !important; box-shadow: 0 6px 24px rgba(0,0,0,0.35) !important; }
@@ -220,7 +243,7 @@ div[data-baseweb="select"] > div, input { background-color: #1A2436 !important; 
 .audit-card-gold { background: linear-gradient(180deg, #4A3410 0%, #131A26 100%); border: 1px solid #FFAB00; border-top: 4px solid #FFAB00; border-radius: 14px; padding: 14px; }
 .audit-card-green { background: linear-gradient(180deg, #0F3D33 0%, #131A26 100%); border: 1px solid #00C853; border-top: 4px solid #00C853; border-radius: 14px; padding: 14px; }
 
-/* ===== STADION MALAM - WARNA GELAP REALISTIS, BUKAN IJO NEON ===== */
+/* ===== STADION MALAM - WARNA GELAP REALISTIS ===== */
 .hero-stadium-dark {
     height: 38vw;
     min-height: 360px;
@@ -323,7 +346,6 @@ def render_dashboard() -> None:
     last_scan_wita = scan_meta.get("scan_timestamp_wita") or "BELUM TERSEDIA"
     source_status = scan_meta.get("source_status") or "NEVER_SCANNED"
 
-    # ===== STADION MALAM GELAP - PASTI MUNCUL KARENA PAKE KODE, BUKAN FOTO EKSTERNAL =====
     st.markdown(f"""
     <div class="hero-stadium-dark">
         <div class="tribun"></div>
