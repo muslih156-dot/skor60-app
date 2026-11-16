@@ -1,7 +1,7 @@
 """
 app.py
 TRADING BOLA MENIT 60 – LAST GOAL SYSTEM
-FULL VERSION - Background Stadion Malam Hari + Kartu Kaca
+FULL VERSION - Background Stadion Malam TERANG (Fix Gagal Kemarin)
 """
 
 from datetime import datetime, timezone
@@ -194,12 +194,11 @@ def render_match_table_html(table_rows):
 
 st.set_page_config(page_title="TRADING BOLA MENIT 60 – LAST GOAL SYSTEM", page_icon="⚽", layout="wide", initial_sidebar_state="expanded")
 
-# ===== BACKGROUND STADION MALAM HARI =====
+# ===== BACKGROUND STADION MALAM - FIX: LEBIH TERANG BIAR KELIATAN =====
 st.markdown("""
 <style>
-/* BACKGROUND STADION MALAM - gelap 88% biar tulisan tetep jelas */
 .stApp, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] {
-    background: linear-gradient(rgba(5, 8, 15, 0.88), rgba(5, 8, 15, 0.93)), url("https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=2000&auto=format&fit=crop") !important;
+    background: linear-gradient(rgba(5, 8, 15, 0.62), rgba(5, 8, 15, 0.72)), url("https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2000&auto=format&fit=crop") !important;
     background-size: cover !important;
     background-position: center top !important;
     background-attachment: fixed !important;
@@ -227,15 +226,14 @@ div[data-baseweb="select"] > div, input { background-color: #1A2436 !important; 
 .audit-card-blue { background: linear-gradient(180deg, rgba(30,58,95,0.95) 0%, rgba(19,26,38,0.95) 100%); border: 1px solid #3B82F6; border-top: 4px solid #3B82F6; border-radius: 14px; padding: 14px; }
 .audit-card-gold { background: linear-gradient(180deg, rgba(74,52,16,0.95) 0%, rgba(19,26,38,0.95) 100%); border: 1px solid #FFAB00; border-top: 4px solid #FFAB00; border-radius: 14px; padding: 14px; }
 .audit-card-green { background: linear-gradient(180deg, rgba(15,61,51,0.95) 0%, rgba(19,26,38,0.95) 100%); border: 1px solid #00C853; border-top: 4px solid #00C853; border-radius: 14px; padding: 14px; }
-/* Sidebar juga dikasih stadion samar */
-[data-testid="stSidebar"] { background: linear-gradient(rgba(5,8,15,0.92), rgba(5,8,15,0.95)), url("https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=1000&auto=format&fit=crop") !important; background-size: cover !important; background-position: center !important; }
+[data-testid="stSidebar"] { background: linear-gradient(rgba(5,8,15,0.70), rgba(5,8,15,0.82)), url("https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1000&auto=format&fit=crop") !important; background-size: cover !important; background-position: center !important; }
 [data-testid="stSidebar"] * { color: #E2E8F0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
 <style>
-.main-header { background: linear-gradient(90deg, rgba(15,23,42,0.95) 0%, rgba(30,58,95,0.95) 45%, rgba(15,61,51,0.95) 100%); color: #f8fafc; padding: 1.4rem 1.8rem; border-radius: 16px; border-left: 6px solid #10B981; border: 1px solid #2A3550; box-shadow: 0 8px 30px rgba(0,0,0,0.55); margin-bottom: 1.2rem; backdrop-filter: blur(6px); }
+.main-header { background: linear-gradient(90deg, rgba(15,23,42,0.85) 0%, rgba(30,58,95,0.75) 45%, rgba(15,61,51,0.85) 100%), url("https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2000&auto=format&fit=crop"); background-size: cover; background-position: center 30%; color: #f8fafc; padding: 1.4rem 1.8rem; border-radius: 16px; border-left: 6px solid #10B981; border: 1px solid #2A3550; box-shadow: 0 8px 30px rgba(0,0,0,0.55); margin-bottom: 1.2rem; backdrop-filter: blur(2px); }
 .metric-card { background: linear-gradient(180deg, rgba(26,36,54,0.95) 0%, rgba(19,26,38,0.95) 100%); color: #f8fafc; padding: 1.1rem; border-radius: 14px; border: 1px solid #2A3550; height: 100%; box-shadow: 0 6px 20px rgba(0,0,0,0.40); backdrop-filter: blur(4px); }
 .metric-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: #94A3B8; margin-bottom: 0.35rem; }
 .metric-value { font-size: 1.55rem; font-weight: 800; color: #ffffff; }
