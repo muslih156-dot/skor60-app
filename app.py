@@ -1,7 +1,7 @@
 """
 app.py
 TRADING BOLA MENIT 60 – LAST GOAL SYSTEM
-FULL VERSION - Hero Stadion 380px + Kotak Hitam (Fix Gepeng)
+FULL VERSION - Hero Stadion 480px, Header Ganda Dihapus
 """
 
 from datetime import datetime, timezone
@@ -194,7 +194,6 @@ def render_match_table_html(table_rows):
 
 st.set_page_config(page_title="TRADING BOLA MENIT 60 – LAST GOAL SYSTEM", page_icon="⚽", layout="wide", initial_sidebar_state="expanded")
 
-# ===== BACKGROUND HITAM POLOS - STADION PINDAH KE HERO BANNER =====
 st.markdown("""
 <style>
 .stApp, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] { background: #0A0F1A !important; background-color: #0A0F1A !important; }
@@ -221,38 +220,39 @@ div[data-baseweb="select"] > div, input { background-color: #1A2436 !important; 
 .audit-card-gold { background: linear-gradient(180deg, #4A3410 0%, #131A26 100%); border: 1px solid #FFAB00; border-top: 4px solid #FFAB00; border-radius: 14px; padding: 14px; }
 .audit-card-green { background: linear-gradient(180deg, #0F3D33 0%, #131A26 100%); border: 1px solid #00C853; border-top: 4px solid #00C853; border-radius: 14px; padding: 14px; }
 
-/* ===== HERO STADION GEDE 380px - FIX GEPENG ===== */
+/* ===== HERO STADION 480px - GEDE, HEADER GANDA DIHAPUS ===== */
 .hero-stadium {
-    height: 380px;
-    min-height: 380px;
+    height: 480px;
+    min-height: 480px;
     border-radius: 18px;
     border: 3px solid #FBBF24;
     overflow: hidden;
     position: relative;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
     background:
-        radial-gradient(220px 90px at 10% 8%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.85) 22%, transparent 60%),
-        radial-gradient(220px 90px at 50% 8%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.85) 22%, transparent 60%),
-        radial-gradient(220px 90px at 90% 8%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.85) 22%, transparent 60%),
-        linear-gradient(180deg, #020617 0% 15%, #1E3A8A 15% 45%, #0F5132 45% 50%, #16A34A 50% 100%);
+        radial-gradient(280px 110px at 10% 6%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.9) 25%, transparent 60%),
+        radial-gradient(280px 110px at 50% 6%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.9) 25%, transparent 60%),
+        radial-gradient(280px 110px at 90% 6%, rgba(255,255,220,1) 0%, rgba(255,255,180,0.9) 25%, transparent 60%),
+        linear-gradient(180deg, #020617 0% 14%, #1E3A8A 14% 44%, #0F5132 44% 49%, #16A34A 49% 100%);
     box-shadow: 0 10px 40px rgba(0,0,0,0.6);
 }
-.hero-stadium .tribun { position: absolute; top: 18%; left: 0; right: 0; height: 28%; background: repeating-linear-gradient(90deg, #1E3A8A 0 14px, #1D4ED8 14px 28px, #172554 28px 32px); border-top: 4px solid #FBBF24; border-bottom: 4px solid #FBBF24; opacity: 0.95; }
-.hero-stadium .tribun::after { content: "👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥"; position: absolute; top: 6px; left: 0; right: 0; text-align: center; font-size: 22px; letter-spacing: 6px; }
-.hero-stadium .lapangan { position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: repeating-linear-gradient(90deg, #16A34A 0 80px, #22C55E 80px 160px); border-top: 4px solid #FFFFFF; }
-.hero-stadium .garis-tengah { position: absolute; bottom: 0; left: 50%; width: 4px; height: 50%; background: #FFFFFF; transform: translateX(-50%); }
-.hero-stadium .lingkaran { position: absolute; bottom: 10%; left: 50%; width: 130px; height: 130px; border: 4px solid #FFFFFF; border-radius: 50%; transform: translateX(-50%); }
-.hero-stadium .bola { position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%); font-size: 48px; z-index: 3; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
-.hero-stadium .gawang-kiri { position: absolute; bottom: 18%; left: 2%; width: 80px; height: 100px; border: 5px solid #FFFFFF; border-left: none; background: rgba(255,255,255,0.15); }
-.hero-stadium .gawang-kanan { position: absolute; bottom: 18%; right: 2%; width: 80px; height: 100px; border: 5px solid #FFFFFF; border-right: none; background: rgba(255,255,255,0.15); }
+.hero-stadium .tribun { position: absolute; top: 16%; left: 0; right: 0; height: 30%; background: repeating-linear-gradient(90deg, #1E3A8A 0 14px, #1D4ED8 14px 28px, #172554 28px 32px); border-top: 4px solid #FBBF24; border-bottom: 4px solid #FBBF24; opacity: 0.95; }
+.hero-stadium .tribun::after { content: "👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥 👥"; position: absolute; top: 10px; left: 0; right: 0; text-align: center; font-size: 28px; letter-spacing: 8px; }
+.hero-stadium .lapangan { position: absolute; bottom: 0; left: 0; right: 0; height: 51%; background: repeating-linear-gradient(90deg, #16A34A 0 80px, #22C55E 80px 160px); border-top: 4px solid #FFFFFF; }
+.hero-stadium .garis-tengah { position: absolute; bottom: 0; left: 50%; width: 4px; height: 51%; background: #FFFFFF; transform: translateX(-50%); }
+.hero-stadium .lingkaran { position: absolute; bottom: 12%; left: 50%; width: 160px; height: 160px; border: 4px solid #FFFFFF; border-radius: 50%; transform: translateX(-50%); }
+.hero-stadium .bola { position: absolute; bottom: 22%; left: 50%; transform: translateX(-50%); font-size: 56px; z-index: 3; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
+.hero-stadium .gawang-kiri { position: absolute; bottom: 20%; left: 2%; width: 90px; height: 120px; border: 5px solid #FFFFFF; border-left: none; background: rgba(255,255,255,0.15); }
+.hero-stadium .gawang-kanan { position: absolute; bottom: 20%; right: 2%; width: 90px; height: 120px; border: 5px solid #FFFFFF; border-right: none; background: rgba(255,255,255,0.15); }
 .hero-stadium .teks { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; z-index: 5; }
-.hero-stadium .teks-box { background: rgba(0,0,0,0.72); border: 2px solid #FBBF24; border-radius: 16px; padding: 16px 28px; max-width: 90%; }
+.hero-stadium .teks-box { background: rgba(0,0,0,0.78); border: 2px solid #FBBF24; border-radius: 18px; padding: 22px 36px; max-width: 92%; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+.hero-stadium .info-bar { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; font-size: 12px; font-weight: 700; color: #CBD5E1; }
+.hero-stadium .info-bar span { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); padding: 5px 10px; border-radius: 20px; }
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
 <style>
-.main-header { background: linear-gradient(90deg, #0F172A 0%, #1E3A5F 45%, #0F3D33 100%); color: #f8fafc; padding: 1.2rem 1.6rem; border-radius: 14px; border-left: 6px solid #10B981; border: 1px solid #2A3550; box-shadow: 0 8px 30px rgba(0,0,0,0.45); margin-bottom: 1.2rem; }
 .metric-card { background: linear-gradient(180deg, #1A2436 0%, #131A26 100%); color: #f8fafc; padding: 1.1rem; border-radius: 14px; border: 1px solid #2A3550; height: 100%; box-shadow: 0 6px 20px rgba(0,0,0,0.30); }
 .metric-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: #94A3B8; margin-bottom: 0.35rem; }
 .metric-value { font-size: 1.55rem; font-weight: 800; color: #ffffff; }
@@ -282,43 +282,6 @@ def get_peak_hours_label(now_wita: datetime) -> str:
     return "07:00–13:00 WITA: Jam Transisi (Aktivitas Pertandingan Reguler Rendah)"
 
 def render_dashboard() -> None:
-    # ===== HERO STADION - GEDE + KOTAK HITAM =====
-    st.markdown("""
-    <div class="hero-stadium">
-        <div class="tribun"></div>
-        <div class="lapangan"></div>
-        <div class="garis-tengah"></div>
-        <div class="lingkaran"></div>
-        <div class="gawang-kiri"></div>
-        <div class="gawang-kanan"></div>
-        <div class="bola">⚽</div>
-        <div class="teks">
-            <div class="teks-box">
-                <div style="font-size:14px; letter-spacing:4px; font-weight:800; color:#FDE68A;">🏟️ STADION MALAM HARI • LAMPU SOROT MENYALA</div>
-                <div style="font-size:42px; font-weight:900; color:white; line-height:1.1; margin-top:8px;">TRADING BOLA MENIT 60<br><span style="color:#34D399;">LAST GOAL SYSTEM</span></div>
-                <div style="margin-top:10px; background:#FBBF24; color:black; padding:7px 16px; border-radius:20px; font-size:14px; font-weight:800; display:inline-block;">OVER 0.5 GOAL • ENTRY 60'-66' • SKOR 0-0 • CUT-OFF 12:00 WITA</div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("### 🔄 Live Scan ESPN")
-    c_scan1, c_scan2, c_scan3 = st.columns([1, 1, 3])
-    with c_scan1:
-        if st.button("🔄 Scan Sekarang", use_container_width=True):
-            with st.spinner("Lagi scan ESPN..."):
-                res = _try_run_scan()
-                if res["ok"]:
-                    st.success(f"Scan berhasil: {res['msg']}")
-                else:
-                    st.warning(f"Scan belum jalan: {res['msg']} | Masih pakai data lama, tidak error.")
-                st.rerun()
-    with c_scan2:
-        if st.button("🧹 Clear Cache & Reload", use_container_width=True):
-            st.cache_data.clear()
-            st.rerun()
-    with c_scan3:
-        st.caption("Kalau tombol Scan bilang 'scanner.py belum ada', berarti file scanner bapak namanya beda. Kirim nama file scanner-nya, saya sesuaikan import-nya. Data lama tetap tampil, tidak hilang.")
     all_records = []
     if load_matches_from_old_repo:
         try:
@@ -358,8 +321,51 @@ def render_dashboard() -> None:
     now_wita = datetime.now(timezone.utc).astimezone(WITA_TZ)
     last_scan_wita = scan_meta.get("scan_timestamp_wita") or "BELUM TERSEDIA"
     source_status = scan_meta.get("source_status") or "NEVER_SCANNED"
-    last_db_update_str = "DARI REPO LAMA skor60 (via data_loader.py)"
-    st.markdown(f"""<div class="main-header"><h2 style="margin:0; font-weight:800;">⚽ TRADING BOLA MENIT 60 — <span style="color:#34D399;">LAST GOAL SYSTEM</span></h2><p style="margin:6px 0 10px 0; color:#94A3B8;">Market: <b style="color:#FBBF24;">OVER 0.5 GOAL AFTER ENTRY (Menit 60'–66', Skor Entry 0-0)</b> | Cut-Off Trading Day: <b style="color:#fff;">12:00 WITA</b></p><div style="display:flex; flex-wrap:wrap; gap:18px; font-size:0.86rem;"><span>🟢 <b>System Status:</b> {source_status}</span><span>📡 <b>Data Source:</b> ESPN API (All + Multi-League)</span><span>🕒 <b>Last Scan:</b> {last_scan_wita}</span><span>💾 <b>Last DB Update:</b> {last_db_update_str}</span><span>⏰ <b>Current WITA:</b> {now_wita.strftime('%Y-%m-%d %H:%M:%S')}</span><span>⚽ <b>Total Matches:</b> {len(all_records)}</span></div></div>""", unsafe_allow_html=True)
+
+    # ===== HERO STADION 480px - SUDAH TERMASUK INFO HEADER, JADI HEADER GANDA DIHAPUS =====
+    st.markdown(f"""
+    <div class="hero-stadium">
+        <div class="tribun"></div>
+        <div class="lapangan"></div>
+        <div class="garis-tengah"></div>
+        <div class="lingkaran"></div>
+        <div class="gawang-kiri"></div>
+        <div class="gawang-kanan"></div>
+        <div class="bola">⚽</div>
+        <div class="teks">
+            <div class="teks-box">
+                <div style="font-size:14px; letter-spacing:4px; font-weight:800; color:#FDE68A;">🏟️ STADION MALAM HARI • LAMPU SOROT MENYALA</div>
+                <div style="font-size:52px; font-weight:900; color:white; line-height:1.05; margin-top:10px;">TRADING BOLA MENIT 60<br><span style="color:#34D399;">LAST GOAL SYSTEM</span></div>
+                <div style="margin-top:12px; background:#FBBF24; color:black; padding:8px 18px; border-radius:20px; font-size:15px; font-weight:800; display:inline-block;">OVER 0.5 GOAL • ENTRY 60'-66' • SKOR 0-0 • CUT-OFF 12:00 WITA</div>
+                <div class="info-bar">
+                    <span>🟢 {source_status}</span>
+                    <span>📡 ESPN API</span>
+                    <span>🕒 Last Scan: {last_scan_wita}</span>
+                    <span>⏰ WITA: {now_wita.strftime('%Y-%m-%d %H:%M:%S')}</span>
+                    <span>⚽ Total: {len(all_records)} Match</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("### 🔄 Live Scan ESPN")
+    c_scan1, c_scan2, c_scan3 = st.columns([1, 1, 3])
+    with c_scan1:
+        if st.button("🔄 Scan Sekarang", use_container_width=True):
+            with st.spinner("Lagi scan ESPN..."):
+                res = _try_run_scan()
+                if res["ok"]:
+                    st.success(f"Scan berhasil: {res['msg']}")
+                else:
+                    st.warning(f"Scan belum jalan: {res['msg']} | Masih pakai data lama, tidak error.")
+                st.rerun()
+    with c_scan2:
+        if st.button("🧹 Clear Cache & Reload", use_container_width=True):
+            st.cache_data.clear()
+            st.rerun()
+    with c_scan3:
+        st.caption("Kalau tombol Scan bilang 'scanner.py belum ada', berarti file scanner bapak namanya beda. Kirim nama file scanner-nya, saya sesuaikan import-nya. Data lama tetap tampil, tidak hilang.")
     st.info(f"🕒 **Panduan Monitoring Jam Aktif (WITA):** {get_peak_hours_label(now_wita)} *(Panduan monitoring, bukan jaminan jumlah pertandingan).* Pertandingan LIVE terdeteksi pada scan terakhir: **{scan_meta.get('live_matches_seen', 0)}**")
     sim_stats = stats["simulated"]
     act_stats = stats["actual"]
