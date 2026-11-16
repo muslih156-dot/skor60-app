@@ -12,8 +12,6 @@ from typing import Any, Dict, List
 
 import pandas as pd
 import plotly.express as px
-import plotly.io as pio
-pio.templates.default = "plotly_dark"
 import plotly.graph_objects as go
 import streamlit as st
 from zoneinfo import ZoneInfo
