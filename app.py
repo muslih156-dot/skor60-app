@@ -1,7 +1,7 @@
 """
 app.py
 TRADING BOLA MENIT 60 – LAST GOAL SYSTEM
-FINAL: Background Hitam Rapi + Banner Foto Stadion Asli (Bukan Ijo Neon, Bukan Header Doang)
+FINAL FIX: Foto Eksternal Ke-Block, Balik ke Gambar Kode Tapi Warna Gelap Realistis (Bukan Ijo Neon)
 """
 
 from datetime import datetime, timezone
@@ -194,7 +194,6 @@ def render_match_table_html(table_rows):
 
 st.set_page_config(page_title="TRADING BOLA MENIT 60 – LAST GOAL SYSTEM", page_icon="⚽", layout="wide", initial_sidebar_state="expanded")
 
-# ===== BACKGROUND BALIK HITAM RAPI - NGGAK IJO LAGI =====
 st.markdown("""
 <style>
 .stApp, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] { background: #0A0F1A !important; background-color: #0A0F1A !important; }
@@ -221,29 +220,35 @@ div[data-baseweb="select"] > div, input { background-color: #1A2436 !important; 
 .audit-card-gold { background: linear-gradient(180deg, #4A3410 0%, #131A26 100%); border: 1px solid #FFAB00; border-top: 4px solid #FFAB00; border-radius: 14px; padding: 14px; }
 .audit-card-green { background: linear-gradient(180deg, #0F3D33 0%, #131A26 100%); border: 1px solid #00C853; border-top: 4px solid #00C853; border-radius: 14px; padding: 14px; }
 
-/* ===== BANNER FOTO STADION ASLI - 420px, BUKAN GAMBAR KODE ===== */
-.hero-photo {
-    height: 420px;
-    min-height: 420px;
+/* ===== STADION MALAM - WARNA GELAP REALISTIS, BUKAN IJO NEON ===== */
+.hero-stadium-dark {
+    height: 38vw;
+    min-height: 360px;
+    max-height: 560px;
     border-radius: 18px;
-    border: 3px solid #FBBF24;
+    border: 2px solid #334155;
     overflow: hidden;
     position: relative;
     margin-bottom: 16px;
-    background: #020617;
+    background:
+        radial-gradient(280px 90px at 12% 4%, rgba(255,244,180,0.95) 0%, rgba(255,244,180,0.55) 30%, transparent 65%),
+        radial-gradient(280px 90px at 50% 4%, rgba(255,244,180,0.95) 0%, rgba(255,244,180,0.55) 30%, transparent 65%),
+        radial-gradient(280px 90px at 88% 4%, rgba(255,244,180,0.95) 0%, rgba(255,244,180,0.55) 30%, transparent 65%),
+        linear-gradient(180deg, #020617 0% 14%, #0F172A 14% 18%, #1E293B 18% 42%, #14532D 42% 46%, #166534 46% 100%);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.7);
 }
-.hero-photo img.bg-foto {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    object-fit: cover; object-position: center 35%;
-}
-.hero-photo .overlay-gelap {
-    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.75) 100%);
-}
-.hero-photo .teks { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; z-index: 5; padding: 16px; }
-.hero-photo .teks-box { background: rgba(0,0,0,0.68); border: 2px solid #FBBF24; border-radius: 18px; padding: 20px 32px; max-width: 92%; }
-.hero-photo .info-bar { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; font-size: 12px; font-weight: 700; color: #E2E8F0; }
-.hero-photo .info-bar span { background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.3); padding: 5px 10px; border-radius: 20px; }
+.hero-stadium-dark .tribun { position: absolute; top: 18%; left: 0; right: 0; height: 26%; background: repeating-linear-gradient(90deg, #0F172A 0 16px, #1E293B 16px 32px, #020617 32px 36px); border-top: 2px solid #475569; border-bottom: 3px solid #E2E8F0; opacity: 1; }
+.hero-stadium-dark .tribun::after { content: "• • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • •"; position: absolute; top: 8px; left: 0; right: 0; text-align: center; font-size: 20px; letter-spacing: 10px; color: #94A3B8; }
+.hero-stadium-dark .lapangan { position: absolute; bottom: 0; left: 0; right: 0; height: 54%; background: repeating-linear-gradient(90deg, #14532D 0 90px, #166534 90px 180px); border-top: 3px solid rgba(255,255,255,0.85); }
+.hero-stadium-dark .garis-tengah { position: absolute; bottom: 0; left: 50%; width: 3px; height: 54%; background: rgba(255,255,255,0.85); transform: translateX(-50%); }
+.hero-stadium-dark .lingkaran { position: absolute; bottom: 10%; left: 50%; width: 150px; height: 150px; border: 3px solid rgba(255,255,255,0.85); border-radius: 50%; transform: translateX(-50%); }
+.hero-stadium-dark .bola { position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%); font-size: 42px; z-index: 3; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.7)); }
+.hero-stadium-dark .gawang-kiri { position: absolute; bottom: 18%; left: 2.5%; width: 82px; height: 110px; border: 4px solid rgba(255,255,255,0.85); border-left: none; background: rgba(255,255,255,0.08); }
+.hero-stadium-dark .gawang-kanan { position: absolute; bottom: 18%; right: 2.5%; width: 82px; height: 110px; border: 4px solid rgba(255,255,255,0.85); border-right: none; background: rgba(255,255,255,0.08); }
+.hero-stadium-dark .teks { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; z-index: 5; padding: 12px; }
+.hero-stadium-dark .teks-box { background: rgba(0,0,0,0.72); border: 1px solid #FBBF24; border-radius: 16px; padding: 18px 28px; max-width: 92%; }
+.hero-stadium-dark .info-bar { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; font-size: 12px; font-weight: 700; color: #E2E8F0; }
+.hero-stadium-dark .info-bar span { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); padding: 5px 10px; border-radius: 20px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -318,15 +323,20 @@ def render_dashboard() -> None:
     last_scan_wita = scan_meta.get("scan_timestamp_wita") or "BELUM TERSEDIA"
     source_status = scan_meta.get("source_status") or "NEVER_SCANNED"
 
-    # ===== BANNER FOTO STADION ASLI =====
+    # ===== STADION MALAM GELAP - PASTI MUNCUL KARENA PAKE KODE, BUKAN FOTO EKSTERNAL =====
     st.markdown(f"""
-    <div class="hero-photo">
-        <img class="bg-foto" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Allianz-Arena-Munich-2012.jpg/1280px-Allianz-Arena-Munich-2012.jpg" alt="Stadion" />
-        <div class="overlay-gelap"></div>
+    <div class="hero-stadium-dark">
+        <div class="tribun"></div>
+        <div class="lapangan"></div>
+        <div class="garis-tengah"></div>
+        <div class="lingkaran"></div>
+        <div class="gawang-kiri"></div>
+        <div class="gawang-kanan"></div>
+        <div class="bola">⚽</div>
         <div class="teks">
             <div class="teks-box">
-                <div style="font-size:14px; letter-spacing:4px; font-weight:800; color:#FDE68A;">🏟️ STADION MALAM HARI • FOTO ASLI</div>
-                <div style="font-size:48px; font-weight:900; color:white; line-height:1.05; margin-top:10px;">TRADING BOLA MENIT 60<br><span style="color:#34D399;">LAST GOAL SYSTEM</span></div>
+                <div style="font-size:13px; letter-spacing:4px; font-weight:800; color:#FDE68A;">🏟️ STADION MALAM HARI • LAMPU SOROT MENYALA</div>
+                <div style="font-size:46px; font-weight:900; color:white; line-height:1.05; margin-top:10px;">TRADING BOLA MENIT 60<br><span style="color:#34D399;">LAST GOAL SYSTEM</span></div>
                 <div style="margin-top:12px; background:#FBBF24; color:black; padding:8px 18px; border-radius:20px; font-size:14px; font-weight:800; display:inline-block;">OVER 0.5 GOAL • ENTRY 60'-66' • SKOR 0-0 • CUT-OFF 12:00 WITA</div>
                 <div class="info-bar">
                     <span>🟢 {source_status}</span>
