@@ -1,10 +1,7 @@
 """
 app.py
 Dashboard Streamlit Produksi untuk TRADING BOLA MENIT 60 – LAST GOAL SYSTEM.
-Membaca langsung dari database operasional dan file histori yang tersimpan tanpa membuat
-data dummy. Menampilkan pemisahan profit aktual vs simulasi, 5 kartu utama, 6 grafik Plotly,
-ringkasan trading day (cut-off 12:00 WITA), tabel 20 pertandingan terbaru dengan filter,
-dan panel penjelasan audit detail beserta label Aktif/Pasif.
+FULL DARK THEME - Background hitam pekat, tidak belang-belang lagi.
 """
 
 from datetime import datetime, timezone
@@ -16,7 +13,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from zoneinfo import ZoneInfo
 
-# --- REVISI: Import dengan cadangan biar nggak error line 19 lagi ---
+# --- REVISI: Import dengan cadangan ---
 try:
     from config import (
         CURRENCY,
@@ -53,13 +50,11 @@ try:
 except Exception:
     compute_full_dashboard_statistics = None
 
-# --- REVISI: data_loader dari repo lama ---
 try:
     from data_loader import load_matches_from_old_repo
 except Exception:
     load_matches_from_old_repo = None
 
-# --- TAMBAHAN SCAN: TIDAK MENGHAPUS YANG LAMA, CUMA NAMBAH ---
 try:
     from scanner import run_scan as _run_scan_from_scanner
 except Exception:
@@ -72,7 +67,6 @@ except Exception:
             _run_scan_from_scanner = None
 
 def _try_run_scan():
-    """Panggil scan ESPN kalau file scanner-nya ada. Kalau tidak ada, balik ke data lama, tidak error."""
     if _run_scan_from_scanner is None:
         return {"ok": False, "msg": "File scanner.py belum ada / nama fungsinya beda"}
     try:
@@ -83,37 +77,104 @@ def _try_run_scan():
 
 WITA_TZ = ZoneInfo(TIMEZONE_NAME)
 
+# --- HELPER: Bikin semua grafik Plotly jadi hitam ---
+def style_fig(fig):
+    fig.update_layout(
+        template="plotly_dark",
+        paper_bgcolor="#121212",
+        plot_bgcolor="#121212",
+        font=dict(color="#EAEAEA", size=12),
+        title_font=dict(color="#FFFFFF", size=14),
+        xaxis=dict(gridcolor="#2A2A2A", zerolinecolor="#2A2A2A", tickfont=dict(color="#EAEAEA")),
+        yaxis=dict(gridcolor="#2A2A2A", zerolinecolor="#2A2A2A", tickfont=dict(color="#EAEAEA")),
+        legend=dict(bgcolor="#121212", font=dict(color="#EAEAEA")),
+        margin=dict(l=10, r=10, t=50, b=10),
+    )
+    return fig
+
 st.set_page_config(
     page_title="TRADING BOLA MENIT 60 – LAST GOAL SYSTEM",
     page_icon="⚽",
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+# --- CSS FULL HITAM - TIDAK ADA LAGI YANG BELANG ---
 st.markdown("""
 <style>
-.stApp, [data-testid="stAppViewContainer"] {
+/* 1. Background utama full hitam */
+.stApp, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] {
     background-color: #0A0A0A !important;
 }
 [data-testid="stMainBlockContainer"] {
-    background-color: #0A0A0A !important;
-    padding-top: 20px;
+    padding-top: 20px !important;
+    max-width: 100% !important;
 }
-/* Card biar ada kotaknya, nggak nempel */
-[data-testid="stVerticalBlock"] > div {
+/* 2. HAPUS aturan yang bikin belang: jangan kasih background ke semua VerticalBlock */
+/* 3. Semua teks jadi putih / abu terang */
+h1, h2, h3, h4, p, span, div, label, li {
+    color: #EAEAEA !important;
+}
+small, .stCaption, [data-testid="stCaptionContainer"] {
+    color: #9CA3AF !important;
+}
+/* 4. Expander, Tabs, Selectbox, Button jadi hitam */
+[data-testid="stExpander"], [data-testid="stTabs"], [data-testid="stSelectbox"], [data-testid="stDataFrame"] {
+    background-color: #121212 !important;
+    border: 1px solid #2A2A2A !important;
+    border-radius: 12px !important;
+}
+[data-testid="stExpander"] summary, button[data-baseweb="tab"] {
+    color: #EAEAEA !important;
+    background-color: #121212 !important;
+}
+button[data-baseweb="tab"][aria-selected="true"] {
+    background-color: #1E293B !important;
+    color: #FFFFFF !important;
+}
+/* Input / Selectbox */
+div[data-baseweb="select"] > div, input {
     background-color: #1A1A1A !important;
+    color: #FFFFFF !important;
+    border-color: #2A2A2A !important;
+}
+/* Button */
+.stButton > button {
+    background-color: #1E293B !important;
+    color: #FFFFFF !important;
+    border: 1px solid #334155 !important;
+}
+/* 5. DataFrame / Tabel - paksa hitam */
+[data-testid="stDataFrame"], [data-testid="stDataFrame"] > div, [data-testid="stDataFrame"] iframe {
+    background-color: #121212 !important;
+    color: #EAEAEA !important;
+}
+/* 6. Plotly chart container hitam */
+[data-testid="stPlotlyChart"], [data-testid="stPlotlyChart"] > div {
+    background-color: #121212 !important;
+    border: 1px solid #2A2A2A !important;
+    border-radius: 12px !important;
+    padding: 8px !important;
+}
+/* 7. Alert info/warning tetap gelap */
+[data-testid="stAlert"] {
+    background-color: #1A1A1A !important;
+    color: #EAEAEA !important;
+    border: 1px solid #2A2A2A !important;
+}
+/* 8. Metric bawaan streamlit */
+[data-testid="stMetric"] {
+    background-color: #121212 !important;
     border: 1px solid #2A2A2A !important;
     border-radius: 12px !important;
     padding: 12px !important;
-    margin-bottom: 12px !important;
 }
-h1, h2, h3, h4, p, span, div, label {
-    color: #EAEAEA !important;
-}
-small, .stCaption {
-    color: #9CA3AF !important;
+[data-testid="stMetricValue"], [data-testid="stMetricLabel"] {
+    color: #FFFFFF !important;
 }
 </style>
 """, unsafe_allow_html=True)
+
 st.markdown(
     """
     <style>
@@ -177,7 +238,6 @@ def get_peak_hours_label(now_wita: datetime) -> str:
     return "07:00–13:00 WITA: Jam Transisi (Aktivitas Pertandingan Reguler Rendah)"
 
 def render_dashboard() -> None:
-    # --- TAMBAHAN: Panel Scan - taruh paling atas dashboard ---
     st.markdown("### 🔄 Live Scan ESPN")
     c_scan1, c_scan2, c_scan3 = st.columns([1, 1, 3])
     with c_scan1:
@@ -196,7 +256,6 @@ def render_dashboard() -> None:
     with c_scan3:
         st.caption("Kalau tombol Scan bilang 'scanner.py belum ada', berarti file scanner bapak namanya beda. Kirim nama file scanner-nya, saya sesuaikan import-nya. Data lama tetap tampil, tidak hilang.")
 
-    # --- REVISI: Ambil data dari repo lama dulu ---
     all_records = []
     if load_matches_from_old_repo:
         try:
@@ -216,13 +275,12 @@ def render_dashboard() -> None:
     if not scan_meta:
         scan_meta = {"scan_timestamp_wita": "DARI REPO LAMA skor60", "source_status": "LOADED_FROM_OLD_REPO", "live_matches_seen": len(all_records)}
 
-    # --- TAMBAHAN: Auto-scan 1x per 15 menit, biar tidak NEVER_SCANNED terus ---
     try:
         if "last_scan_time" not in st.session_state:
             st.session_state.last_scan_time = None
         _now_ts = datetime.now(timezone.utc).timestamp()
         _last_ts = st.session_state.last_scan_time or 0
-        if (_now_ts - _last_ts) > 900:  # 900 detik = 15 menit
+        if (_now_ts - _last_ts) > 900:
             _res_auto = _try_run_scan()
             if _res_auto["ok"]:
                 st.session_state.last_scan_time = _now_ts
@@ -242,9 +300,6 @@ def render_dashboard() -> None:
     source_status = scan_meta.get("source_status") or "NEVER_SCANNED"
     last_db_update_str = "DARI REPO LAMA skor60 (via data_loader.py)"
 
-    # =================================================================
-    # 1. HEADER UTAMA
-    # =================================================================
     st.markdown(
         f"""
         <div class="main-header">
@@ -276,9 +331,6 @@ def render_dashboard() -> None:
     act_stats = stats["actual"]
     major_stats = stats["by_league_tier"]["MAJOR"]
 
-    # =================================================================
-    # 2. LIMA KARTU UTAMA
-    # =================================================================
     cols = st.columns(5)
 
     with cols[0]:
@@ -292,7 +344,6 @@ def render_dashboard() -> None:
             """,
             unsafe_allow_html=True,
         )
-
     with cols[1]:
         st.markdown(
             f"""
@@ -304,7 +355,6 @@ def render_dashboard() -> None:
             """,
             unsafe_allow_html=True,
         )
-
     with cols[2]:
         act_profit_label = (
             f"{format_idr(act_stats['net_profit'])} (ROI {act_stats['roi']:.2f}%)"
@@ -324,7 +374,6 @@ def render_dashboard() -> None:
             """,
             unsafe_allow_html=True,
         )
-
     with cols[3]:
         ci_low, ci_high = sim_stats["wilson_ci_95"]
         st.markdown(
@@ -341,7 +390,6 @@ def render_dashboard() -> None:
             """,
             unsafe_allow_html=True,
         )
-
     with cols[4]:
         major_badge = (
             "⚠️ LOW SAMPLE SIZE"
@@ -364,29 +412,23 @@ def render_dashboard() -> None:
 
     st.write("")
 
-    # =================================================================
-    # 3. PEMISAHAN STATISTIK SIMULASI VS ACTUAL ODDS
-    # =================================================================
     with st.expander("📊 Detail Statistik Kuantitatif, Break-Even, EV, & Klasifikasi Liga (Major / Minor / Unknown)", expanded=True):
         tab_sim, tab_act, tab_tier = st.tabs([
             "A. SIMULATED PERFORMANCE (Odds 1.80)",
             "B. ACTUAL ODDS PERFORMANCE",
             "C. Klasifikasi Liga (MAJOR / MINOR / UNKNOWN)",
         ])
-
         with tab_sim:
             c1, c2, c3, c4 = st.columns(4)
             c1.metric("Break-Even Win Rate", f"{sim_stats['break_even_win_rate']:.2f}%" if sim_stats["break_even_win_rate"] else "N/A")
             c2.metric("Expected Value (EV / Match)", format_idr(int(sim_stats["expected_value_per_match"])) if sim_stats["expected_value_per_match"] is not None else "N/A")
             c3.metric("Maximum Drawdown", format_idr(sim_stats["max_drawdown"]))
             c4.metric("Profit Factor", f"{sim_stats['profit_factor']}" if sim_stats["profit_factor"] != float("inf") else "∞")
-
             c5, c6, c7, c8 = st.columns(4)
             c5.metric("Longest Winning Streak", f"{sim_stats['longest_winning_streak']} Match")
             c6.metric("Longest Losing Streak", f"{sim_stats['longest_losing_streak']} Match")
             c7.metric("Wilson 95% CI", f"{sim_stats['wilson_ci_95'][0]:.2f}% – {sim_stats['wilson_ci_95'][1]:.2f}%")
             c8.metric("Status Ukuran Sampel", sim_stats["sample_size_warning"])
-
         with tab_act:
             if not act_stats["available"]:
                 st.warning("ACTUAL ODDS: NOT AVAILABLE — Belum ada kandidat pertandingan yang memiliki data odds aktual dari provider saat entry.")
@@ -396,7 +438,6 @@ def render_dashboard() -> None:
                 a2.metric("Average Entry Odds", f"{act_stats['average_odds']:.3f}" if act_stats["average_odds"] else "N/A")
                 a3.metric("Break-Even WR (Actual)", f"{act_stats['break_even_win_rate']:.2f}%" if act_stats["break_even_win_rate"] else "N/A")
                 a4.metric("Actual Net Profit", format_idr(act_stats["net_profit"]))
-
         with tab_tier:
             tier_rows = []
             for tier_key in ("MAJOR", "MINOR", "UNKNOWN"):
@@ -417,15 +458,11 @@ def render_dashboard() -> None:
                 })
             st.dataframe(pd.DataFrame(tier_rows), use_container_width=True, hide_index=True)
 
-    # =================================================================
-    # 4. GRAFIK VISUALISASI PLOTLY
-    # =================================================================
     st.subheader("📈 Visualisasi Performa & Distribusi")
     if len(all_records) == 0:
         st.info("NO LIVE MATCH FOUND / BELUM ADA DATA HISTORIS — Grafik akan ditampilkan otomatis setelah terdapat data pertandingan yang tercatat.")
     else:
         g_col1, g_col2, g_col3 = st.columns(3)
-
         with g_col1:
             status_counts = {
                 "WIN": sim_stats["win"],
@@ -450,11 +487,10 @@ def render_dashboard() -> None:
                         "REVIEW": "#ea580c",
                     },
                 )
-                st.plotly_chart(fig_donut, use_container_width=True)
+                st.plotly_chart(style_fig(fig_donut), use_container_width=True)
             else:
                 st.caption("Data belum cukup untuk grafik distribusi status.")
 
-        # --- FIX: 2 baris fig.update_layout( yang nyangkut udah dihapus di sini ---
         day_summaries = list(reversed(stats["by_trading_day"]))
         settled_days = [d for d in day_summaries if d["settled_matches"] > 0]
 
@@ -470,7 +506,7 @@ def render_dashboard() -> None:
                     color="simulated_profit",
                     color_continuous_scale=["#dc2626", "#16a34a"],
                 )
-                st.plotly_chart(fig_daily, use_container_width=True)
+                st.plotly_chart(style_fig(fig_daily), use_container_width=True)
             else:
                 st.caption("Belum ada pertandingan settled untuk grafik profit harian.")
 
@@ -486,12 +522,11 @@ def render_dashboard() -> None:
                     title="Grafik Cumulative Profit (Simulasi IDR)",
                     labels={"trading_day": "Trading Day", "cumulative_profit": "Cumulative Profit (IDR)"},
                 )
-                st.plotly_chart(fig_cum, use_container_width=True)
+                st.plotly_chart(style_fig(fig_cum), use_container_width=True)
             else:
                 st.caption("Belum ada pertandingan settled untuk grafik cumulative profit.")
 
         g_col4, g_col5, g_col6 = st.columns(3)
-
         with g_col4:
             tier_list = [
                 stats["by_league_tier"]["MAJOR"],
@@ -509,10 +544,9 @@ def render_dashboard() -> None:
                     title="Performa Major vs Minor vs Unknown",
                     labels={"tier": "Klasifikasi Liga", "value": "Jumlah Pertandingan"},
                 )
-                st.plotly_chart(fig_tier, use_container_width=True)
+                st.plotly_chart(style_fig(fig_tier), use_container_width=True)
             else:
                 st.caption("Data belum cukup untuk grafik Major vs Minor.")
-
         with g_col5:
             actual_settled = [
                 r for r in all_records
@@ -530,11 +564,9 @@ def render_dashboard() -> None:
                     title="Win Rate (%) Berdasarkan Odds Aktual",
                     labels={"odds_entry": "Odds Entry", "is_win": "Win Rate (%)"},
                 )
-                st.plotly_chart(fig_odds, use_container_width=True)
+                st.plotly_chart(style_fig(fig_odds), use_container_width=True)
             else:
                 st.caption("Data odds aktual belum cukup untuk grafik Win Rate berdasarkan odds.")
-
-        # --- FIX: fig.update_layout( kedua yang nyangkut juga udah dihapus di sini ---
         with g_col6:
             entry_mins = [int(r["minute_detected"]) for r in all_records if r.get("minute_detected") is not None]
             if entry_mins:
@@ -547,13 +579,10 @@ def render_dashboard() -> None:
                     labels={"minute_detected": "Menit Deteksi Entry"},
                 )
                 fig_min.update_layout(bargap=0.2)
-                st.plotly_chart(fig_min, use_container_width=True)
+                st.plotly_chart(style_fig(fig_min), use_container_width=True)
             else:
                 st.caption("Data belum cukup untuk grafik distribusi menit entry.")
 
-    # =================================================================
-    # 5. RINGKASAN TRADING DAY
-    # =================================================================
     st.subheader("🗓️ Ringkasan Partisi Harian (Cut-Off 12:00 WITA)")
     if not stats["by_trading_day"]:
         st.caption("Belum ada riwayat trading day di database.")
@@ -575,11 +604,7 @@ def render_dashboard() -> None:
         ])
         st.dataframe(df_td, use_container_width=True, hide_index=True)
 
-    # =================================================================
-    # 6. TABEL PERTANDINGAN & FILTER (DENGAN LABEL AKTIVITAS)
-    # =================================================================
     st.subheader("📋 Daftar Pertandingan (20 Terbaru Sesuai Filter)")
-
     f_col1, f_col2 = st.columns([2, 1])
     with f_col1:
         status_filter = st.selectbox(
@@ -595,12 +620,10 @@ def render_dashboard() -> None:
     for rec in all_records:
         if day_filter != "Semua" and rec.get("trading_day") != day_filter:
             continue
-
         res = str(rec.get("result") or "PENDING").upper()
         m_status = str(rec.get("match_status") or "").upper()
         s_status = str(rec.get("settlement_status") or "PENDING").upper()
         l_cat = str(rec.get("league_category") or ("MAJOR" if rec.get("is_major") else "UNKNOWN")).upper()
-
         if status_filter == "LIVE" and m_status not in ("FIRST HALF", "SECOND HALF", "HALFTIME", "LIVE", "EXTRA TIME", "PENALTIES"):
             continue
         elif status_filter == "WIN" and res != "WIN":
@@ -617,7 +640,6 @@ def render_dashboard() -> None:
             continue
         elif status_filter == "MINOR" and l_cat != "MINOR":
             continue
-
         filtered_records.append(rec)
 
     top_20 = filtered_records[:20]
@@ -633,12 +655,10 @@ def render_dashboard() -> None:
             display_status = "LIVE" if is_live_now else (
                 "REVIEW" if rec.get("settlement_status") == "REVIEW" else res
             )
-
             badge_tier = "MAJOR" if rec.get("is_major") else str(rec.get("league_category") or "UNKNOWN")
             odds_disp = f"{rec.get('odds_entry', SIMULATED_ODDS):.2f} (Actual)" if rec.get("odds_entry") is not None else f"{SIMULATED_ODDS:.2f} (Sim)"
             pnl_val = rec.get("actual_profit") if rec.get("odds_entry") is not None else rec.get("simulated_profit", 0)
             act_label = rec.get("activity_label", "NORMAL")
-
             table_rows.append({
                 "No": idx,
                 "Match ID": rec.get("match_id"),
@@ -655,7 +675,6 @@ def render_dashboard() -> None:
                 "Profit": format_idr(int(pnl_val or 0)) if res in ("WIN", "LOSE", "VOID") else "Rp0 (Pending)",
                 "Trading Day": rec.get("trading_day"),
             })
-
         df_table = pd.DataFrame(table_rows)
 
         def style_table(row):
@@ -680,15 +699,10 @@ def render_dashboard() -> None:
                 styles[row.index.get_loc('Activity')] = "background-color: #d32f2f; color: white; font-weight: bold;"
             return styles
 
-        st.dataframe(
-            df_table.style.apply(style_table, axis=1),
-            use_container_width=True,
-            hide_index=True,
-        )
+        # Pakai styler dengan background hitam biar tabel tidak putih lagi
+        styled = df_table.style.apply(style_table, axis=1).set_properties(**{"background-color": "#121212", "color": "#EAEAEA"}).set_table_styles([{"selector": "th", "props": [("background-color", "#1E293B"), ("color", "white")]}])
+        st.dataframe(styled, use_container_width=True, hide_index=True)
 
-        # =================================================================
-        # 7. PANEL AUDIT DETAIL PERTANDINGAN
-        # =================================================================
         st.subheader("🔍 Audit Trail & Penjelasan Hasil Pertandingan")
         match_options = {
             f"[{r.get('trading_day')}] {r.get('home_team')} vs {r.get('away_team')} (ID: {r.get('match_id')})": r
@@ -698,11 +712,9 @@ def render_dashboard() -> None:
         if selected_label:
             sel_rec = match_options[selected_label]
             audit_info = audit_result(sel_rec)
-
             st.markdown(f"**Penjelasan Audit Otomatis:** {audit_info['explanation']}")
             if not audit_info["audit_passed"]:
                 st.error(f"Temuan Audit: {', '.join(audit_info['issues'])}")
-
             a_col1, a_col2, a_col3 = st.columns(3)
             with a_col1:
                 st.markdown("**1. Identitas & Waktu Entry**")
@@ -729,7 +741,6 @@ def render_dashboard() -> None:
                 st.write(f"- **Sumber Data:** `{sel_rec.get('source')}`")
                 st.write(f"- **Status Verifikasi:** `{sel_rec.get('verification_status')}`")
                 st.write(f"- **Terakhir Diverifikasi:** `{sel_rec.get('last_verified_at')}`")
-
             s_col1, s_col2 = st.columns(2)
             with s_col1:
                 st.markdown("**Riwayat Snapshot Skor Berkala:**")
@@ -738,7 +749,6 @@ def render_dashboard() -> None:
                     st.dataframe(pd.DataFrame(snaps), use_container_width=True, hide_index=True)
                 else:
                     st.caption("Tidak ada snapshot.")
-
             with s_col2:
                 st.markdown("**Bukti Event Gol / Perubahan Skor:**")
                 g_events = sel_rec.get("goal_events") or []
@@ -746,7 +756,6 @@ def render_dashboard() -> None:
                     st.dataframe(pd.DataFrame(g_events), use_container_width=True, hide_index=True)
                 else:
                     st.caption("Belum ada event gol tercatat.")
-
             revs = sel_rec.get("revision_history") or []
             if revs:
                 st.markdown("**Riwayat Perubahan / Koreksi Resmi Provider (Revision History):**")
