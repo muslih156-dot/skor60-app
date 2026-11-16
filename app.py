@@ -1,7 +1,7 @@
 """
 app.py
 TRADING BOLA MENIT 60 – LAST GOAL SYSTEM
-FIX: Daftar Pertandingan pakai st.html (bukan st.markdown) biar tidak jadi teks putih
+FULL VERSION - Background Stadion Malam Hari + Kartu Kaca
 """
 
 from datetime import datetime, timezone
@@ -70,7 +70,7 @@ def _try_run_scan():
 WITA_TZ = ZoneInfo(TIMEZONE_NAME)
 
 def style_fig(fig):
-    fig.update_layout(template="plotly_dark", paper_bgcolor="#131A26", plot_bgcolor="#131A26", font=dict(color="#E2E8F0", size=12), title_font=dict(color="#FFFFFF", size=14, family="Arial Black"), xaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")), yaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")), legend=dict(bgcolor="#131A26", font=dict(color="#E2E8F0")), margin=dict(l=10, r=10, t=50, b=10))
+    fig.update_layout(template="plotly_dark", paper_bgcolor="rgba(19,26,38,0.95)", plot_bgcolor="rgba(19,26,38,0.95)", font=dict(color="#E2E8F0", size=12), title_font=dict(color="#FFFFFF", size=14, family="Arial Black"), xaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")), yaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")), legend=dict(bgcolor="#131A26", font=dict(color="#E2E8F0")), margin=dict(l=10, r=10, t=50, b=10))
     return fig
 
 def style_dark_table(df):
@@ -142,7 +142,7 @@ def render_match_table_html(table_rows):
         html.append(f'<th style="{header_style}">{h}</th>')
     html.append('</tr></thead><tbody>')
     for i, r in enumerate(table_rows):
-        bg_row = "#1A2436" if i % 2 == 0 else "#131A26"
+        bg_row = "rgba(26,36,54,0.95)" if i % 2 == 0 else "rgba(19,26,38,0.95)"
         badge = str(r["Badge"]).upper()
         if badge == "MAJOR":
             badge_html = pill("MAJOR", "#2979FF")
@@ -194,44 +194,55 @@ def render_match_table_html(table_rows):
 
 st.set_page_config(page_title="TRADING BOLA MENIT 60 – LAST GOAL SYSTEM", page_icon="⚽", layout="wide", initial_sidebar_state="expanded")
 
+# ===== BACKGROUND STADION MALAM HARI =====
 st.markdown("""
 <style>
-.stApp, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] { background: radial-gradient(1200px 600px at 20% 0%, #111B2E 0%, #0A0F1A 45%, #080A10 100%) !important; background-color: #0A0F1A !important; }
+/* BACKGROUND STADION MALAM - gelap 88% biar tulisan tetep jelas */
+.stApp, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] {
+    background: linear-gradient(rgba(5, 8, 15, 0.88), rgba(5, 8, 15, 0.93)), url("https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=2000&auto=format&fit=crop") !important;
+    background-size: cover !important;
+    background-position: center top !important;
+    background-attachment: fixed !important;
+    background-color: #0A0F1A !important;
+}
 [data-testid="stMainBlockContainer"] { padding-top: 18px !important; max-width: 100% !important; }
 h1, h2, h3, h4, p, span, div, label, li { color: #E2E8F0 !important; }
 small, .stCaption, [data-testid="stCaptionContainer"] { color: #94A3B8 !important; }
 h3 { border-left: 5px solid #10B981 !important; padding-left: 12px !important; }
-[data-testid="stExpander"], [data-testid="stTabs"], [data-testid="stSelectbox"], [data-testid="stDataFrame"] { background-color: #131A26 !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; }
-[data-testid="stExpander"] summary, button[data-baseweb="tab"] { color: #E2E8F0 !important; background-color: #131A26 !important; }
+[data-testid="stExpander"], [data-testid="stTabs"], [data-testid="stSelectbox"], [data-testid="stDataFrame"] { background-color: rgba(19,26,38,0.95) !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; backdrop-filter: blur(4px) !important; }
+[data-testid="stExpander"] summary, button[data-baseweb="tab"] { color: #E2E8F0 !important; background-color: rgba(19,26,38,0.95) !important; }
 button[data-baseweb="tab"][aria-selected="true"] { background-color: #1E293B !important; color: #FFFFFF !important; border-bottom: 3px solid #10B981 !important; }
 div[data-baseweb="select"] > div, input { background-color: #1A2436 !important; color: #FFFFFF !important; border-color: #2A3550 !important; }
 .stButton > button { background: linear-gradient(90deg, #0EA5E9, #10B981) !important; color: #FFFFFF !important; border: none !important; font-weight: 700 !important; border-radius: 10px !important; box-shadow: 0 4px 18px rgba(16,185,129,0.35) !important; }
-[data-testid="stDataFrame"], [data-testid="stDataFrame"] > div, [data-testid="stDataFrame"] iframe { background-color: #131A26 !important; color: #E2E8F0 !important; }
-[data-testid="stPlotlyChart"], [data-testid="stPlotlyChart"] > div { background-color: #131A26 !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; padding: 8px !important; box-shadow: 0 6px 24px rgba(0,0,0,0.35) !important; }
-[data-testid="stAlert"] { background-color: #131A26 !important; color: #E2E8F0 !important; border: 1px solid #2A3550 !important; border-left: 5px solid #10B981 !important; border-radius: 12px !important; }
+[data-testid="stDataFrame"], [data-testid="stDataFrame"] > div, [data-testid="stDataFrame"] iframe { background-color: rgba(19,26,38,0.95) !important; color: #E2E8F0 !important; }
+[data-testid="stPlotlyChart"], [data-testid="stPlotlyChart"] > div { background-color: rgba(19,26,38,0.95) !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; padding: 8px !important; box-shadow: 0 6px 24px rgba(0,0,0,0.45) !important; backdrop-filter: blur(4px) !important; }
+[data-testid="stAlert"] { background-color: rgba(19,26,38,0.95) !important; color: #E2E8F0 !important; border: 1px solid #2A3550 !important; border-left: 5px solid #10B981 !important; border-radius: 12px !important; }
 [data-testid="stAlert"] p, [data-testid="stAlert"] span, [data-testid="stAlert"] div { color: #E2E8F0 !important; }
-[data-testid="stMetric"] { background-color: #131A26 !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; padding: 12px !important; }
+[data-testid="stMetric"] { background-color: rgba(19,26,38,0.95) !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; padding: 12px !important; }
 [data-testid="stMetricValue"], [data-testid="stMetricLabel"] { color: #FFFFFF !important; }
-.section-card { background: linear-gradient(90deg, #1A2436 0%, #131A26 100%); border: 1px solid #2A3550; border-left: 5px solid #F59E0B; border-radius: 12px; padding: 12px 16px; margin: 18px 0 10px 0; }
+.section-card { background: linear-gradient(90deg, rgba(26,36,54,0.95) 0%, rgba(19,26,38,0.95) 100%) !important; border: 1px solid #2A3550; border-left: 5px solid #F59E0B; border-radius: 12px; padding: 12px 16px; margin: 18px 0 10px 0; backdrop-filter: blur(4px); }
 .section-card-blue { border-left: 5px solid #3B82F6 !important; }
 .section-card-green { border-left: 5px solid #10B981 !important; }
 .section-card-pink { border-left: 5px solid #EC4899 !important; }
-.audit-card-blue { background: linear-gradient(180deg, #1E3A5F 0%, #131A26 100%); border: 1px solid #3B82F6; border-top: 4px solid #3B82F6; border-radius: 14px; padding: 14px; }
-.audit-card-gold { background: linear-gradient(180deg, #4A3410 0%, #131A26 100%); border: 1px solid #FFAB00; border-top: 4px solid #FFAB00; border-radius: 14px; padding: 14px; }
-.audit-card-green { background: linear-gradient(180deg, #0F3D33 0%, #131A26 100%); border: 1px solid #00C853; border-top: 4px solid #00C853; border-radius: 14px; padding: 14px; }
+.audit-card-blue { background: linear-gradient(180deg, rgba(30,58,95,0.95) 0%, rgba(19,26,38,0.95) 100%); border: 1px solid #3B82F6; border-top: 4px solid #3B82F6; border-radius: 14px; padding: 14px; }
+.audit-card-gold { background: linear-gradient(180deg, rgba(74,52,16,0.95) 0%, rgba(19,26,38,0.95) 100%); border: 1px solid #FFAB00; border-top: 4px solid #FFAB00; border-radius: 14px; padding: 14px; }
+.audit-card-green { background: linear-gradient(180deg, rgba(15,61,51,0.95) 0%, rgba(19,26,38,0.95) 100%); border: 1px solid #00C853; border-top: 4px solid #00C853; border-radius: 14px; padding: 14px; }
+/* Sidebar juga dikasih stadion samar */
+[data-testid="stSidebar"] { background: linear-gradient(rgba(5,8,15,0.92), rgba(5,8,15,0.95)), url("https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=1000&auto=format&fit=crop") !important; background-size: cover !important; background-position: center !important; }
+[data-testid="stSidebar"] * { color: #E2E8F0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
 <style>
-.main-header { background: linear-gradient(90deg, #0F172A 0%, #1E3A5F 45%, #0F3D33 100%); color: #f8fafc; padding: 1.4rem 1.8rem; border-radius: 16px; border-left: 6px solid #10B981; border: 1px solid #2A3550; box-shadow: 0 8px 30px rgba(0,0,0,0.45); margin-bottom: 1.2rem; }
-.metric-card { background: linear-gradient(180deg, #1A2436 0%, #131A26 100%); color: #f8fafc; padding: 1.1rem; border-radius: 14px; border: 1px solid #2A3550; height: 100%; box-shadow: 0 6px 20px rgba(0,0,0,0.30); }
+.main-header { background: linear-gradient(90deg, rgba(15,23,42,0.95) 0%, rgba(30,58,95,0.95) 45%, rgba(15,61,51,0.95) 100%); color: #f8fafc; padding: 1.4rem 1.8rem; border-radius: 16px; border-left: 6px solid #10B981; border: 1px solid #2A3550; box-shadow: 0 8px 30px rgba(0,0,0,0.55); margin-bottom: 1.2rem; backdrop-filter: blur(6px); }
+.metric-card { background: linear-gradient(180deg, rgba(26,36,54,0.95) 0%, rgba(19,26,38,0.95) 100%); color: #f8fafc; padding: 1.1rem; border-radius: 14px; border: 1px solid #2A3550; height: 100%; box-shadow: 0 6px 20px rgba(0,0,0,0.40); backdrop-filter: blur(4px); }
 .metric-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: #94A3B8; margin-bottom: 0.35rem; }
 .metric-value { font-size: 1.55rem; font-weight: 800; color: #ffffff; }
 .metric-sub { font-size: 0.82rem; color: #CBD5E1; margin-top: 0.3rem; }
 .profit-green { color: #34D399 !important; } .profit-red { color: #F87171 !important; }
 .accent-blue { color: #60A5FA !important; } .accent-gold { color: #FBBF24 !important; } .accent-purple { color: #A78BFA !important; }
-.insight-card { background: linear-gradient(180deg, #1A2436 0%, #131A26 100%); border: 1px solid #2A3550; border-radius: 14px; padding: 14px; text-align: center; }
+.insight-card { background: linear-gradient(180deg, rgba(26,36,54,0.95) 0%, rgba(19,26,38,0.95) 100%); border: 1px solid #2A3550; border-radius: 14px; padding: 14px; text-align: center; backdrop-filter: blur(4px); }
 .insight-label { font-size: 0.75rem; letter-spacing: 0.08em; color: #94A3B8; text-transform: uppercase; }
 .insight-value { font-size: 1.35rem; font-weight: 800; margin-top: 6px; }
 .insight-sub { font-size: 0.80rem; color: #CBD5E1; margin-top: 4px; }
@@ -479,7 +490,6 @@ def render_dashboard() -> None:
             pnl_val = rec.get("actual_profit") if rec.get("odds_entry") is not None else rec.get("simulated_profit", 0)
             act_label = rec.get("activity_label", "NORMAL")
             table_rows.append({"No": idx, "Match ID": rec.get("match_id"), "Match": f"{rec.get('home_team')} vs {rec.get('away_team')}", "League": rec.get("league"), "Badge": badge_tier, "Activity": act_label, "Min Entry": f"{rec.get('minute_detected')}'", "Entry Score": rec.get("score_at_entry"), "Entry Odds": odds_disp, "Current Score": rec.get("current_score"), "Final Score": rec.get("final_score") or "-", "Result": display_status, "Profit": format_idr(int(pnl_val or 0)) if res in ("WIN", "LOSE", "VOID") else "Rp0 (Pending)", "Trading Day": rec.get("trading_day")})
-        # FIX: pakai st.html, bukan st.markdown
         try:
             st.html(render_match_table_html(table_rows))
         except Exception:
