@@ -1,7 +1,7 @@
 """
 app.py
 TRADING BOLA MENIT 60 – LAST GOAL SYSTEM
-FIX TENGAH: Daftar Pertandingan pakai HTML Table (st.dataframe tidak bisa tampilkan warna)
+FIX: Daftar Pertandingan pakai st.html (bukan st.markdown) biar tidak jadi teks putih
 """
 
 from datetime import datetime, timezone
@@ -129,12 +129,10 @@ def color_rekor(val):
         pass
     return ""
 
-# ============ HELPER BARU: TABEL HTML BERWARNA UNTUK TENGAH ============
 def pill(text, bg, fg="#FFFFFF"):
     return f'<span style="display:inline-block; padding:3px 10px; border-radius:20px; background:{bg}; color:{fg}; font-weight:800; font-size:11px; white-space:nowrap;">{text}</span>'
 
 def render_match_table_html(table_rows):
-    """Render Daftar Pertandingan sebagai HTML - warnanya pasti muncul."""
     header_style = "background: linear-gradient(90deg, #1E3A5F, #6D28D9); color:white; padding:8px 6px; font-size:12px; font-weight:800; text-align:center; white-space:nowrap;"
     html = []
     html.append('<div style="overflow-x:auto; border:1px solid #2A3550; border-radius:12px;">')
@@ -145,25 +143,22 @@ def render_match_table_html(table_rows):
     html.append('</tr></thead><tbody>')
     for i, r in enumerate(table_rows):
         bg_row = "#1A2436" if i % 2 == 0 else "#131A26"
-        # Badge
         badge = str(r["Badge"]).upper()
         if badge == "MAJOR":
-            badge_html = pill("🏆 MAJOR", "#2979FF")
+            badge_html = pill("MAJOR", "#2979FF")
         elif badge == "MINOR":
-            badge_html = pill("⭐ MINOR", "#FFAB00", "#000")
+            badge_html = pill("MINOR", "#FFAB00", "#000")
         else:
-            badge_html = pill("❓ UNKNOWN", "#78909C")
-        # Activity
+            badge_html = pill("UNKNOWN", "#78909C")
         act = str(r["Activity"]).upper()
         if act == "AKTIF":
-            act_html = pill("🟢 AKTIF", "#00C853")
+            act_html = pill("AKTIF", "#00C853")
         elif act == "PASIF":
-            act_html = pill("🔴 PASIF", "#FF5252")
+            act_html = pill("PASIF", "#FF5252")
         elif "NO_STATS" in act:
-            act_html = pill("🟠 NO DATA", "#FF6D00")
+            act_html = pill("NO DATA", "#FF6D00")
         else:
             act_html = pill(act, "#37474F")
-        # League
         league = str(r["League"])
         if "SERIE A" in league.upper() or "PREMIER" in league.upper() or "LA LIGA" in league.upper():
             league_html = pill(league, "#7C4DFF")
@@ -171,21 +166,19 @@ def render_match_table_html(table_rows):
             league_html = pill(league, "#37474F", "#CFD8DC")
         else:
             league_html = pill(league, "#00695C")
-        # Result
         res = str(r["Result"]).upper()
         if res == "WIN":
-            res_html = pill("✅ WIN", "#00C853")
+            res_html = pill("WIN", "#00C853")
         elif res == "LOSE":
-            res_html = pill("❌ LOSE", "#FF5252")
+            res_html = pill("LOSE", "#FF5252")
         elif res == "LIVE":
-            res_html = pill("🔵 LIVE", "#2979FF")
+            res_html = pill("LIVE", "#2979FF")
         elif res == "PENDING":
-            res_html = pill("🟡 PENDING", "#FFAB00", "#000")
+            res_html = pill("PENDING", "#FFAB00", "#000")
         elif res == "VOID":
-            res_html = pill("⚪ VOID", "#78909C")
+            res_html = pill("VOID", "#78909C")
         else:
             res_html = pill(res, "#FF6D00")
-        # Profit
         profit = str(r["Profit"])
         if profit.startswith("-"):
             profit_html = pill(profit, "#FF5252")
@@ -193,27 +186,9 @@ def render_match_table_html(table_rows):
             profit_html = pill(profit, "#00C853")
         else:
             profit_html = pill(profit, "#2A3550", "#94A3B8")
-        # Skor
         cell = f"padding:7px 6px; text-align:center; border-bottom:1px solid #2A3550; background:{bg_row};"
         cell_left = f"padding:7px 6px; text-align:left; border-bottom:1px solid #2A3550; background:{bg_row}; font-weight:600;"
-        html.append(f"""
-        <tr>
-            <td style="{cell}"><b style="background:#1E3A5F; padding:3px 8px; border-radius:8px;">{r['No']}</b></td>
-            <td style="{cell}">{r['Match ID']}</td>
-            <td style="{cell_left}">{r['Match']}</td>
-            <td style="{cell}">{league_html}</td>
-            <td style="{cell}">{badge_html}</td>
-            <td style="{cell}">{act_html}</td>
-            <td style="{cell}"><span style="background:#01579B; padding:3px 8px; border-radius:8px; font-weight:800;">{r['Min Entry']}</span></td>
-            <td style="{cell}"><b style="color:#FFCC80;">{r['Entry Score']}</b></td>
-            <td style="{cell}">{r['Entry Odds']}</td>
-            <td style="{cell}"><b>{r['Current Score']}</b></td>
-            <td style="{cell}"><b style="color:#B3E5FC;">{r['Final Score']}</b></td>
-            <td style="{cell}">{res_html}</td>
-            <td style="{cell}">{profit_html}</td>
-            <td style="{cell}"><span style="background:#4527A0; padding:3px 8px; border-radius:8px; font-weight:700;">{r['Trading Day']}</span></td>
-        </tr>
-        """)
+        html.append(f"""<tr><td style="{cell}"><b style="background:#1E3A5F; padding:3px 8px; border-radius:8px;">{r['No']}</b></td><td style="{cell}">{r['Match ID']}</td><td style="{cell_left}">{r['Match']}</td><td style="{cell}">{league_html}</td><td style="{cell}">{badge_html}</td><td style="{cell}">{act_html}</td><td style="{cell}"><span style="background:#01579B; padding:3px 8px; border-radius:8px; font-weight:800;">{r['Min Entry']}</span></td><td style="{cell}"><b style="color:#FFCC80;">{r['Entry Score']}</b></td><td style="{cell}">{r['Entry Odds']}</td><td style="{cell}"><b>{r['Current Score']}</b></td><td style="{cell}"><b style="color:#B3E5FC;">{r['Final Score']}</b></td><td style="{cell}">{res_html}</td><td style="{cell}">{profit_html}</td><td style="{cell}"><span style="background:#4527A0; padding:3px 8px; border-radius:8px; font-weight:700;">{r['Trading Day']}</span></td></tr>""")
     html.append('</tbody></table></div>')
     return "".join(html)
 
@@ -296,7 +271,6 @@ def render_dashboard() -> None:
             st.rerun()
     with c_scan3:
         st.caption("Kalau tombol Scan bilang 'scanner.py belum ada', berarti file scanner bapak namanya beda. Kirim nama file scanner-nya, saya sesuaikan import-nya. Data lama tetap tampil, tidak hilang.")
-
     all_records = []
     if load_matches_from_old_repo:
         try:
@@ -332,28 +306,16 @@ def render_dashboard() -> None:
                     pass
     except Exception:
         pass
-
     stats = compute_full_dashboard_statistics(all_records)
     now_wita = datetime.now(timezone.utc).astimezone(WITA_TZ)
     last_scan_wita = scan_meta.get("scan_timestamp_wita") or "BELUM TERSEDIA"
     source_status = scan_meta.get("source_status") or "NEVER_SCANNED"
     last_db_update_str = "DARI REPO LAMA skor60 (via data_loader.py)"
-
-    st.markdown(f"""
-        <div class="main-header">
-            <h2 style="margin:0; font-weight:800;">⚽ TRADING BOLA MENIT 60 — <span style="color:#34D399;">LAST GOAL SYSTEM</span></h2>
-            <p style="margin:6px 0 10px 0; color:#94A3B8;">Market: <b style="color:#FBBF24;">OVER 0.5 GOAL AFTER ENTRY (Menit 60'–66', Skor Entry 0-0)</b> | Cut-Off Trading Day: <b style="color:#fff;">12:00 WITA</b></p>
-            <div style="display:flex; flex-wrap:wrap; gap:18px; font-size:0.86rem;">
-                <span>🟢 <b>System Status:</b> {source_status}</span><span>📡 <b>Data Source:</b> ESPN API (All + Multi-League)</span><span>🕒 <b>Last Scan:</b> {last_scan_wita}</span><span>💾 <b>Last DB Update:</b> {last_db_update_str}</span><span>⏰ <b>Current WITA:</b> {now_wita.strftime('%Y-%m-%d %H:%M:%S')}</span><span>⚽ <b>Total Matches:</b> {len(all_records)}</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
+    st.markdown(f"""<div class="main-header"><h2 style="margin:0; font-weight:800;">⚽ TRADING BOLA MENIT 60 — <span style="color:#34D399;">LAST GOAL SYSTEM</span></h2><p style="margin:6px 0 10px 0; color:#94A3B8;">Market: <b style="color:#FBBF24;">OVER 0.5 GOAL AFTER ENTRY (Menit 60'–66', Skor Entry 0-0)</b> | Cut-Off Trading Day: <b style="color:#fff;">12:00 WITA</b></p><div style="display:flex; flex-wrap:wrap; gap:18px; font-size:0.86rem;"><span>🟢 <b>System Status:</b> {source_status}</span><span>📡 <b>Data Source:</b> ESPN API (All + Multi-League)</span><span>🕒 <b>Last Scan:</b> {last_scan_wita}</span><span>💾 <b>Last DB Update:</b> {last_db_update_str}</span><span>⏰ <b>Current WITA:</b> {now_wita.strftime('%Y-%m-%d %H:%M:%S')}</span><span>⚽ <b>Total Matches:</b> {len(all_records)}</span></div></div>""", unsafe_allow_html=True)
     st.info(f"🕒 **Panduan Monitoring Jam Aktif (WITA):** {get_peak_hours_label(now_wita)} *(Panduan monitoring, bukan jaminan jumlah pertandingan).* Pertandingan LIVE terdeteksi pada scan terakhir: **{scan_meta.get('live_matches_seen', 0)}**")
     sim_stats = stats["simulated"]
     act_stats = stats["actual"]
     major_stats = stats["by_league_tier"]["MAJOR"]
-
     cols = st.columns(5)
     with cols[0]:
         st.markdown(f"""<div class="metric-card" style="border-top: 4px solid #60A5FA;"><div class="metric-title">💰 CARD 1 – MODAL PER MATCH</div><div class="metric-value accent-blue">{format_idr(DEFAULT_STAKE)}</div><div class="metric-sub">Odds Simulasi: <b>{SIMULATED_ODDS:.2f}</b> ({CURRENCY})</div></div>""", unsafe_allow_html=True)
@@ -370,7 +332,6 @@ def render_dashboard() -> None:
         major_badge = ("⚠️ LOW SAMPLE SIZE" if major_stats["settled_matches"] < MIN_SAMPLE_SIZE_RELIABLE else "✅ SAMPLE OK")
         st.markdown(f"""<div class="metric-card" style="border-top: 4px solid #EC4899;"><div class="metric-title">🏆 CARD 5 – MAJOR PERFORMANCE</div><div class="metric-value">{major_stats['win_rate']:.2f}% WR</div><div class="metric-sub">Profit (Sim): <b>{format_idr(major_stats['simulated_profit'])}</b> | ROI: <b>{major_stats['simulated_roi']:.2f}%</b><br/>Sampel: <b>{major_stats['settled_matches']}</b> settled ({major_badge})</div></div>""", unsafe_allow_html=True)
     st.write("")
-
     with st.expander("📊 Detail Statistik Kuantitatif, Break-Even, EV, & Klasifikasi Liga (Major / Minor / Unknown)", expanded=True):
         tab_sim, tab_act, tab_tier = st.tabs(["A. SIMULATED PERFORMANCE (Odds 1.80)", "B. ACTUAL ODDS PERFORMANCE", "C. Klasifikasi Liga (MAJOR / MINOR / UNKNOWN)"])
         with tab_sim:
@@ -401,7 +362,6 @@ def render_dashboard() -> None:
             df_tier_tab = pd.DataFrame(tier_rows)
             styled_tier = df_tier_tab.style.set_properties(**{"background-color": "#1A2436", "color": "#E2E8F0"}).map(color_profit_vivid, subset=["Profit Simulasi", "Profit Aktual"]).map(color_win_rate_vivid, subset=["Win Rate (%)"]).map(color_roi, subset=["ROI Simulasi (%)"]).set_table_styles([{"selector": "th", "props": [("background-color", "#1E3A5F"), ("color", "white"), ("font-weight", "800")]}])
             st.dataframe(styled_tier, use_container_width=True, hide_index=True)
-
     st.markdown("""<div class="section-card section-card-green"><h3 style="margin:0; border:none; padding:0;">📈 Visualisasi Performa & Distribusi</h3><p style="margin:4px 0 0 0; color:#94A3B8; font-size:0.85rem;">Grafik profit, win rate, dan distribusi entry — semua sudah dark + berwarna.</p></div>""", unsafe_allow_html=True)
     if len(all_records) == 0:
         st.info("NO LIVE MATCH FOUND / BELUM ADA DATA HISTORIS — Grafik akan ditampilkan otomatis setelah terdapat data pertandingan yang tercatat.")
@@ -450,7 +410,6 @@ def render_dashboard() -> None:
                 fig_min = px.histogram(df_min, x="minute_detected", nbins=7, title="Distribusi Menit Entry (60'–66')", labels={"minute_detected": "Menit Deteksi Entry"}, color_discrete_sequence=["#40C4FF"])
                 fig_min.update_layout(bargap=0.2)
                 st.plotly_chart(style_fig(fig_min), use_container_width=True)
-
     st.markdown("""<div class="section-card"><h3 style="margin:0; border:none; padding:0;">🔥 Insight Trading Day</h3><p style="margin:4px 0 0 0; color:#94A3B8; font-size:0.85rem;">Ringkasan cepat sebelum masuk ke tabel detail.</p></div>""", unsafe_allow_html=True)
     if stats["by_trading_day"]:
         days_for_insight = [d for d in stats["by_trading_day"] if d["settled_matches"] > 0]
@@ -466,7 +425,6 @@ def render_dashboard() -> None:
             with i3:
                 avg_color = "#00E676" if avg_profit >= 0 else "#FF5252"
                 st.markdown(f"""<div class="insight-card" style="border-top: 4px solid #FFAB00;"><div class="insight-label">📊 Rata-rata Profit / Hari</div><div class="insight-value" style="color:{avg_color};">{format_idr(int(avg_profit))}</div><div class="insight-sub">Dari {len(days_for_insight)} hari settled • Total {format_idr(sim_stats['net_profit'])}</div></div>""", unsafe_allow_html=True)
-
     st.markdown("""<div class="section-card section-card-blue"><h3 style="margin:0; border:none; padding:0;">🗓️ Ringkasan Partisi Harian (Cut-Off 12:00 WITA)</h3><p style="margin:4px 0 0 0; color:#94A3B8; font-size:0.85rem;">Hijau neon = untung besar, Merah terang = rugi, Kuning emas = win rate sedang.</p></div>""", unsafe_allow_html=True)
     if not stats["by_trading_day"]:
         st.caption("Belum ada riwayat trading day di database.")
@@ -474,16 +432,13 @@ def render_dashboard() -> None:
         df_td = pd.DataFrame([{"Trading Day": d["trading_day"], "Rekor (W-L)": d["summary_text"], "Total Match": d["total_matches"], "Settled": d["settled_matches"], "VOID": d["void"], "PENDING": d["pending"], "Win Rate": f"{d['win_rate']:.2f}%", "Net Profit (Simulasi)": format_idr(d["simulated_profit"]), "ROI (Simulasi)": f"{d['simulated_roi']:.2f}%", "Net Profit (Aktual)": format_idr(d["actual_profit"]) if d["actual_profit"] is not None else "NOT AVAILABLE"} for d in stats["by_trading_day"]])
         styled_td = df_td.style.set_properties(**{"background-color": "#1A2436", "color": "#FFFFFF", "font-weight": "600"}).map(color_profit_vivid, subset=["Net Profit (Simulasi)", "Net Profit (Aktual)"]).map(color_win_rate_vivid, subset=["Win Rate"]).map(color_roi, subset=["ROI (Simulasi)"]).map(color_rekor, subset=["Rekor (W-L)"]).set_table_styles([{"selector": "th", "props": [("background-color", "#1E3A5F"), ("color", "white"), ("font-weight", "800")]}])
         st.dataframe(styled_td, use_container_width=True, hide_index=True)
-
-    # ===== TENGAH - SUDAH DIGANTI JADI HTML, PASTI BERWARNA =====
-    st.markdown("""<div class="section-card section-card-pink"><h3 style="margin:0; border:none; padding:0;">📋 Daftar Pertandingan (20 Terbaru Sesuai Filter)</h3><p style="margin:4px 0 0 0; color:#94A3B8; font-size:0.85rem;">Sekarang pakai tabel HTML — warna pill-nya pasti muncul, tidak ditimpa Streamlit lagi.</p></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="section-card section-card-pink"><h3 style="margin:0; border:none; padding:0;">📋 Daftar Pertandingan (20 Terbaru Sesuai Filter)</h3><p style="margin:4px 0 0 0; color:#94A3B8; font-size:0.85rem;">Sekarang pakai st.html — warna pill-nya pasti muncul, tidak jadi teks putih lagi.</p></div>""", unsafe_allow_html=True)
     f_col1, f_col2 = st.columns([2, 1])
     with f_col1:
         status_filter = st.selectbox("Filter Kategori / Status:", options=["Semua", "LIVE", "WIN", "LOSE", "PENDING", "VOID", "REVIEW", "MAJOR", "MINOR"], index=0)
     with f_col2:
         available_days = ["Semua"] + [d["trading_day"] for d in stats["by_trading_day"]]
         day_filter = st.selectbox("Filter Trading Day:", options=available_days, index=0)
-
     filtered_records: List[Dict[str, Any]] = []
     for rec in all_records:
         if day_filter != "Semua" and rec.get("trading_day") != day_filter:
@@ -509,7 +464,6 @@ def render_dashboard() -> None:
         elif status_filter == "MINOR" and l_cat != "MINOR":
             continue
         filtered_records.append(rec)
-
     top_20 = filtered_records[:20]
     if not top_20:
         st.warning("NO LIVE MATCH FOUND — Tidak ada pertandingan yang cocok dengan filter saat ini.")
@@ -525,9 +479,12 @@ def render_dashboard() -> None:
             pnl_val = rec.get("actual_profit") if rec.get("odds_entry") is not None else rec.get("simulated_profit", 0)
             act_label = rec.get("activity_label", "NORMAL")
             table_rows.append({"No": idx, "Match ID": rec.get("match_id"), "Match": f"{rec.get('home_team')} vs {rec.get('away_team')}", "League": rec.get("league"), "Badge": badge_tier, "Activity": act_label, "Min Entry": f"{rec.get('minute_detected')}'", "Entry Score": rec.get("score_at_entry"), "Entry Odds": odds_disp, "Current Score": rec.get("current_score"), "Final Score": rec.get("final_score") or "-", "Result": display_status, "Profit": format_idr(int(pnl_val or 0)) if res in ("WIN", "LOSE", "VOID") else "Rp0 (Pending)", "Trading Day": rec.get("trading_day")})
-        # RENDER HTML - INI KUNCINYA, BUKAN st.dataframe LAGI
-        st.markdown(render_match_table_html(table_rows), unsafe_allow_html=True)
-
+        # FIX: pakai st.html, bukan st.markdown
+        try:
+            st.html(render_match_table_html(table_rows))
+        except Exception:
+            import streamlit.components.v1 as components
+            components.html(render_match_table_html(table_rows), height=700, scrolling=True)
         st.markdown("""<div class="section-card section-card-green"><h3 style="margin:0; border:none; padding:0;">🔍 Audit Trail & Penjelasan Hasil Pertandingan</h3><p style="margin:4px 0 0 0; color:#94A3B8; font-size:0.85rem;">Pilih satu pertandingan untuk melihat bukti entry, settlement, dan verifikasinya.</p></div>""", unsafe_allow_html=True)
         match_options = {f"[{r.get('trading_day')}] {r.get('home_team')} vs {r.get('away_team')} (ID: {r.get('match_id')})": r for r in top_20}
         selected_label = st.selectbox("Pilih Pertandingan untuk Audit Mendalam:", options=list(match_options.keys()))
