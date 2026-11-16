@@ -453,8 +453,8 @@ def render_dashboard() -> None:
                 st.plotly_chart(fig_donut, use_container_width=True)
             else:
                 st.caption("Data belum cukup untuk grafik distribusi status.")
-fig.update_layout(
-  
+
+        # --- FIX: 2 baris fig.update_layout( yang nyangkut udah dihapus di sini ---
         day_summaries = list(reversed(stats["by_trading_day"]))
         settled_days = [d for d in day_summaries if d["settled_matches"] > 0]
 
@@ -533,8 +533,8 @@ fig.update_layout(
                 st.plotly_chart(fig_odds, use_container_width=True)
             else:
                 st.caption("Data odds aktual belum cukup untuk grafik Win Rate berdasarkan odds.")
-fig.update_layout(
-    
+
+        # --- FIX: fig.update_layout( kedua yang nyangkut juga udah dihapus di sini ---
         with g_col6:
             entry_mins = [int(r["minute_detected"]) for r in all_records if r.get("minute_detected") is not None]
             if entry_mins:
