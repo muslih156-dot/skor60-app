@@ -1,7 +1,7 @@
 """
 app.py
-Dashboard Streamlit Produksi untuk TRADING BOLA MENIT 60 – LAST GOAL SYSTEM.
-FULL DARK THEME - Background hitam pekat, tidak belang-belang lagi.
+TRADING BOLA MENIT 60 – LAST GOAL SYSTEM
+Full Dark Premium Theme - Hitam elegan + aksen warna, tidak monoton
 """
 
 from datetime import datetime, timezone
@@ -13,7 +13,6 @@ import plotly.graph_objects as go
 import streamlit as st
 from zoneinfo import ZoneInfo
 
-# --- REVISI: Import dengan cadangan ---
 try:
     from config import (
         CURRENCY,
@@ -77,29 +76,27 @@ def _try_run_scan():
 
 WITA_TZ = ZoneInfo(TIMEZONE_NAME)
 
-# --- HELPER: Bikin semua grafik Plotly jadi hitam ---
 def style_fig(fig):
     fig.update_layout(
         template="plotly_dark",
-        paper_bgcolor="#121212",
-        plot_bgcolor="#121212",
-        font=dict(color="#EAEAEA", size=12),
-        title_font=dict(color="#FFFFFF", size=14),
-        xaxis=dict(gridcolor="#2A2A2A", zerolinecolor="#2A2A2A", tickfont=dict(color="#EAEAEA")),
-        yaxis=dict(gridcolor="#2A2A2A", zerolinecolor="#2A2A2A", tickfont=dict(color="#EAEAEA")),
-        legend=dict(bgcolor="#121212", font=dict(color="#EAEAEA")),
+        paper_bgcolor="#131A26",
+        plot_bgcolor="#131A26",
+        font=dict(color="#E2E8F0", size=12),
+        title_font=dict(color="#FFFFFF", size=14, family="Arial Black"),
+        xaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")),
+        yaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")),
+        legend=dict(bgcolor="#131A26", font=dict(color="#E2E8F0")),
         margin=dict(l=10, r=10, t=50, b=10),
     )
     return fig
 
-# --- HELPER BARU: Bikin semua tabel jadi hitam ---
 def style_dark_table(df):
     return (
         df.style
-        .set_properties(**{"background-color": "#121212", "color": "#EAEAEA", "border-color": "#2A2A2A"})
+        .set_properties(**{"background-color": "#131A26", "color": "#E2E8F0", "border-color": "#2A3550"})
         .set_table_styles([
-            {"selector": "th", "props": [("background-color", "#1E293B"), ("color", "white"), ("border-color", "#2A2A2A")]},
-            {"selector": "td", "props": [("border-color", "#2A2A2A")]},
+            {"selector": "th", "props": [("background-color", "#1E293B"), ("color", "white"), ("border-color", "#2A3550")]},
+            {"selector": "td", "props": [("border-color", "#2A3550")]},
         ])
     )
 
@@ -110,112 +107,116 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- CSS FULL HITAM ---
+# --- CSS PREMIUM: HITAM + AKSEN WARNA, TIDAK MONOTON ---
 st.markdown("""
 <style>
+/* Background utama: hitam kebiruan + gradasi halus, bukan hitam flat */
 .stApp, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] {
-    background-color: #0A0A0A !important;
+    background: radial-gradient(1200px 600px at 20% 0%, #111B2E 0%, #0A0F1A 45%, #080A10 100%) !important;
+    background-color: #0A0F1A !important;
 }
 [data-testid="stMainBlockContainer"] {
-    padding-top: 20px !important;
+    padding-top: 18px !important;
     max-width: 100% !important;
 }
-h1, h2, h3, h4, p, span, div, label, li {
-    color: #EAEAEA !important;
-}
-small, .stCaption, [data-testid="stCaptionContainer"] {
-    color: #9CA3AF !important;
-}
+h1, h2, h3, h4, p, span, div, label, li { color: #E2E8F0 !important; }
+small, .stCaption, [data-testid="stCaptionContainer"] { color: #94A3B8 !important; }
+
+/* Judul section dikasih aksen */
+h3 { border-left: 5px solid #10B981 !important; padding-left: 12px !important; }
+h2 { letter-spacing: 0.3px !important; }
+
+/* Expander / Tabs / Selectbox */
 [data-testid="stExpander"], [data-testid="stTabs"], [data-testid="stSelectbox"], [data-testid="stDataFrame"] {
-    background-color: #121212 !important;
-    border: 1px solid #2A2A2A !important;
-    border-radius: 12px !important;
+    background-color: #131A26 !important;
+    border: 1px solid #2A3550 !important;
+    border-radius: 14px !important;
 }
 [data-testid="stExpander"] summary, button[data-baseweb="tab"] {
-    color: #EAEAEA !important;
-    background-color: #121212 !important;
+    color: #E2E8F0 !important;
+    background-color: #131A26 !important;
 }
 button[data-baseweb="tab"][aria-selected="true"] {
     background-color: #1E293B !important;
     color: #FFFFFF !important;
+    border-bottom: 3px solid #10B981 !important;
 }
 div[data-baseweb="select"] > div, input {
-    background-color: #1A1A1A !important;
+    background-color: #1A2436 !important;
     color: #FFFFFF !important;
-    border-color: #2A2A2A !important;
+    border-color: #2A3550 !important;
 }
 .stButton > button {
-    background-color: #1E293B !important;
+    background: linear-gradient(90deg, #0EA5E9, #10B981) !important;
     color: #FFFFFF !important;
-    border: 1px solid #334155 !important;
+    border: none !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 18px rgba(16,185,129,0.35) !important;
 }
 [data-testid="stDataFrame"], [data-testid="stDataFrame"] > div, [data-testid="stDataFrame"] iframe {
-    background-color: #121212 !important;
-    color: #EAEAEA !important;
+    background-color: #131A26 !important;
+    color: #E2E8F0 !important;
 }
 [data-testid="stPlotlyChart"], [data-testid="stPlotlyChart"] > div {
-    background-color: #121212 !important;
-    border: 1px solid #2A2A2A !important;
-    border-radius: 12px !important;
+    background-color: #131A26 !important;
+    border: 1px solid #2A3550 !important;
+    border-radius: 14px !important;
     padding: 8px !important;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.35) !important;
 }
+/* FIX: Info bar putih jadi hitam + aksen hijau */
 [data-testid="stAlert"] {
-    background-color: #1A1A1A !important;
-    color: #EAEAEA !important;
-    border: 1px solid #2A2A2A !important;
+    background-color: #131A26 !important;
+    color: #E2E8F0 !important;
+    border: 1px solid #2A3550 !important;
+    border-left: 5px solid #10B981 !important;
+    border-radius: 12px !important;
+}
+[data-testid="stAlert"] p, [data-testid="stAlert"] span, [data-testid="stAlert"] div {
+    color: #E2E8F0 !important;
 }
 [data-testid="stMetric"] {
-    background-color: #121212 !important;
-    border: 1px solid #2A2A2A !important;
-    border-radius: 12px !important;
+    background-color: #131A26 !important;
+    border: 1px solid #2A3550 !important;
+    border-radius: 14px !important;
     padding: 12px !important;
 }
-[data-testid="stMetricValue"], [data-testid="stMetricLabel"] {
-    color: #FFFFFF !important;
-}
+[data-testid="stMetricValue"], [data-testid="stMetricLabel"] { color: #FFFFFF !important; }
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown(
-    """
-    <style>
-    .main-header {
-        background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
-        color: #f8fafc;
-        padding: 1.4rem 1.8rem;
-        border-radius: 12px;
-        border-left: 6px solid #10b981;
-        margin-bottom: 1.2rem;
-    }
-    .metric-card {
-        background-color: #1e293b;
-        color: #f8fafc;
-        padding: 1.1rem;
-        border-radius: 10px;
-        border: 1px solid #334155;
-        height: 100%;
-    }
-    .metric-title {
-        font-size: 0.78rem;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #94a3b8;
-        margin-bottom: 0.35rem;
-    }
-    .metric-value {
-        font-size: 1.45rem;
-        font-weight: 700;
-        color: #ffffff;
-    }
-    .metric-sub {
-        font-size: 0.80rem;
-        color: #cbd5e1;
-        margin-top: 0.3rem;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+st.markdown("""
+<style>
+.main-header {
+    background: linear-gradient(90deg, #0F172A 0%, #1E3A5F 45%, #0F3D33 100%);
+    color: #f8fafc;
+    padding: 1.4rem 1.8rem;
+    border-radius: 16px;
+    border-left: 6px solid #10B981;
+    border: 1px solid #2A3550;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+    margin-bottom: 1.2rem;
+}
+.metric-card {
+    background: linear-gradient(180deg, #1A2436 0%, #131A26 100%);
+    color: #f8fafc;
+    padding: 1.1rem;
+    border-radius: 14px;
+    border: 1px solid #2A3550;
+    height: 100%;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.30);
+}
+.metric-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: #94A3B8; margin-bottom: 0.35rem; }
+.metric-value { font-size: 1.55rem; font-weight: 800; color: #ffffff; }
+.metric-sub { font-size: 0.82rem; color: #CBD5E1; margin-top: 0.3rem; }
+.profit-green { color: #34D399 !important; }
+.profit-red { color: #F87171 !important; }
+.accent-blue { color: #60A5FA !important; }
+.accent-gold { color: #FBBF24 !important; }
+.accent-purple { color: #A78BFA !important; }
+</style>
+""", unsafe_allow_html=True)
 
 def format_idr(amount: int) -> str:
     sign = "-" if amount < 0 else ""
@@ -269,7 +270,6 @@ def render_dashboard() -> None:
         scan_meta = {}
     if not scan_meta:
         scan_meta = {"scan_timestamp_wita": "DARI REPO LAMA skor60", "source_status": "LOADED_FROM_OLD_REPO", "live_matches_seen": len(all_records)}
-
     try:
         if "last_scan_time" not in st.session_state:
             st.session_state.last_scan_time = None
@@ -289,7 +289,6 @@ def render_dashboard() -> None:
         pass
 
     stats = compute_full_dashboard_statistics(all_records)
-
     now_wita = datetime.now(timezone.utc).astimezone(WITA_TZ)
     last_scan_wita = scan_meta.get("scan_timestamp_wita") or "BELUM TERSEDIA"
     source_status = scan_meta.get("source_status") or "NEVER_SCANNED"
@@ -298,24 +297,25 @@ def render_dashboard() -> None:
     st.markdown(
         f"""
         <div class="main-header">
-            <h2 style="margin:0; font-weight:800;">⚽ TRADING BOLA MENIT 60 — LAST GOAL SYSTEM</h2>
-            <p style="margin:4px 0 10px 0; color:#94a3b8;">
-                Market: <b>OVER 0.5 GOAL AFTER ENTRY (Menit 60'–66', Skor Entry 0-0)</b> |
-                Cut-Off Trading Day: <b>12:00 WITA</b>
+            <h2 style="margin:0; font-weight:800;">⚽ TRADING BOLA MENIT 60 — <span style="color:#34D399;">LAST GOAL SYSTEM</span></h2>
+            <p style="margin:6px 0 10px 0; color:#94A3B8;">
+                Market: <b style="color:#FBBF24;">OVER 0.5 GOAL AFTER ENTRY (Menit 60'–66', Skor Entry 0-0)</b> |
+                Cut-Off Trading Day: <b style="color:#fff;">12:00 WITA</b>
             </p>
             <div style="display:flex; flex-wrap:wrap; gap:18px; font-size:0.86rem;">
-                <span><b>System Status:</b> {source_status}</span>
-                <span><b>Data Source:</b> ESPN API (All + Multi-League)</span>
-                <span><b>Last Successful Scan:</b> {last_scan_wita}</span>
-                <span><b>Last DB Update:</b> {last_db_update_str}</span>
-                <span><b>Current WITA:</b> {now_wita.strftime('%Y-%m-%d %H:%M:%S')}</span>
-                <span><b>Total Matches Recorded:</b> {len(all_records)}</span>
+                <span>🟢 <b>System Status:</b> {source_status}</span>
+                <span>📡 <b>Data Source:</b> ESPN API (All + Multi-League)</span>
+                <span>🕒 <b>Last Scan:</b> {last_scan_wita}</span>
+                <span>💾 <b>Last DB Update:</b> {last_db_update_str}</span>
+                <span>⏰ <b>Current WITA:</b> {now_wita.strftime('%Y-%m-%d %H:%M:%S')}</span>
+                <span>⚽ <b>Total Matches:</b> {len(all_records)}</span>
             </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
+    # INFO BAR - SUDAH HITAM, BUKAN PUTIH LAGI
     st.info(
         f"🕒 **Panduan Monitoring Jam Aktif (WITA):** {get_peak_hours_label(now_wita)} "
         f"*(Panduan monitoring, bukan jaminan jumlah pertandingan).* "
@@ -326,29 +326,27 @@ def render_dashboard() -> None:
     act_stats = stats["actual"]
     major_stats = stats["by_league_tier"]["MAJOR"]
 
+    # 5 KARTU - SEKARANG ADA WARNA AKSES MASING-MASING, TIDAK MONOTON
     cols = st.columns(5)
+    profit_color = "profit-green" if sim_stats['net_profit'] >= 0 else "profit-red"
     with cols[0]:
-        st.markdown(f"""<div class="metric-card"><div class="metric-title">CARD 1 – MODAL PER MATCH</div><div class="metric-value">{format_idr(DEFAULT_STAKE)}</div><div class="metric-sub">Odds Simulasi: <b>{SIMULATED_ODDS:.2f}</b> ({CURRENCY})</div></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-card" style="border-top: 4px solid #60A5FA;"><div class="metric-title">💰 CARD 1 – MODAL PER MATCH</div><div class="metric-value accent-blue">{format_idr(DEFAULT_STAKE)}</div><div class="metric-sub">Odds Simulasi: <b>{SIMULATED_ODDS:.2f}</b> ({CURRENCY})</div></div>""", unsafe_allow_html=True)
     with cols[1]:
-        st.markdown(f"""<div class="metric-card"><div class="metric-title">CARD 2 – TOTAL MODAL KELUAR</div><div class="metric-value">{format_idr(sim_stats['total_stake_settled'])}</div><div class="metric-sub">Settled: <b>{sim_stats['settled_matches']}</b> Match (Excl. Pending/Void)</div></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-card" style="border-top: 4px solid #F59E0B;"><div class="metric-title">📤 CARD 2 – TOTAL MODAL KELUAR</div><div class="metric-value accent-gold">{format_idr(sim_stats['total_stake_settled'])}</div><div class="metric-sub">Settled: <b>{sim_stats['settled_matches']}</b> Match (Excl. Pending/Void)</div></div>""", unsafe_allow_html=True)
     with cols[2]:
         act_profit_label = (f"{format_idr(act_stats['net_profit'])} (ROI {act_stats['roi']:.2f}%)" if act_stats["available"] else "ACTUAL ODDS: NOT AVAILABLE")
-        st.markdown(f"""<div class="metric-card"><div class="metric-title">CARD 3 – TOTAL PROFIT</div><div class="metric-value">{format_idr(sim_stats['net_profit'])} <span style="font-size:0.8rem; color:#10b981;">(Sim)</span></div><div class="metric-sub">Sim ROI: <b>{sim_stats['roi']:.2f}%</b><br/>Actual: <b>{act_profit_label}</b></div></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-card" style="border-top: 4px solid #10B981;"><div class="metric-title">📈 CARD 3 – TOTAL PROFIT</div><div class="metric-value {profit_color}">{format_idr(sim_stats['net_profit'])} <span style="font-size:0.8rem; color:#10B981;">(Sim)</span></div><div class="metric-sub">Sim ROI: <b>{sim_stats['roi']:.2f}%</b><br/>Actual: <b>{act_profit_label}</b></div></div>""", unsafe_allow_html=True)
     with cols[3]:
         ci_low, ci_high = sim_stats["wilson_ci_95"]
-        st.markdown(f"""<div class="metric-card"><div class="metric-title">CARD 4 – WIN RATE</div><div class="metric-value">{sim_stats['win_rate']:.2f}%</div><div class="metric-sub"><b>{sim_stats['win']}</b>W / <b>{sim_stats['lose']}</b>L / <b>{sim_stats['void']}</b>V / <b>{sim_stats['pending']}</b>P<br/>Wilson 95% CI: [{ci_low:.1f}%, {ci_high:.1f}%]</div></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-card" style="border-top: 4px solid #A78BFA;"><div class="metric-title">🎯 CARD 4 – WIN RATE</div><div class="metric-value accent-purple">{sim_stats['win_rate']:.2f}%</div><div class="metric-sub"><b>{sim_stats['win']}</b>W / <b>{sim_stats['lose']}</b>L / <b>{sim_stats['void']}</b>V / <b>{sim_stats['pending']}</b>P<br/>Wilson 95% CI: [{ci_low:.1f}%, {ci_high:.1f}%]</div></div>""", unsafe_allow_html=True)
     with cols[4]:
         major_badge = ("⚠️ LOW SAMPLE SIZE" if major_stats["settled_matches"] < MIN_SAMPLE_SIZE_RELIABLE else "✅ SAMPLE OK")
-        st.markdown(f"""<div class="metric-card"><div class="metric-title">CARD 5 – MAJOR PERFORMANCE</div><div class="metric-value">{major_stats['win_rate']:.2f}% WR</div><div class="metric-sub">Profit (Sim): <b>{format_idr(major_stats['simulated_profit'])}</b> | ROI: <b>{major_stats['simulated_roi']:.2f}%</b><br/>Sampel: <b>{major_stats['settled_matches']}</b> settled ({major_badge})</div></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-card" style="border-top: 4px solid #EC4899;"><div class="metric-title">🏆 CARD 5 – MAJOR PERFORMANCE</div><div class="metric-value">{major_stats['win_rate']:.2f}% WR</div><div class="metric-sub">Profit (Sim): <b>{format_idr(major_stats['simulated_profit'])}</b> | ROI: <b>{major_stats['simulated_roi']:.2f}%</b><br/>Sampel: <b>{major_stats['settled_matches']}</b> settled ({major_badge})</div></div>""", unsafe_allow_html=True)
 
     st.write("")
 
     with st.expander("📊 Detail Statistik Kuantitatif, Break-Even, EV, & Klasifikasi Liga (Major / Minor / Unknown)", expanded=True):
-        tab_sim, tab_act, tab_tier = st.tabs([
-            "A. SIMULATED PERFORMANCE (Odds 1.80)",
-            "B. ACTUAL ODDS PERFORMANCE",
-            "C. Klasifikasi Liga (MAJOR / MINOR / UNKNOWN)",
-        ])
+        tab_sim, tab_act, tab_tier = st.tabs(["A. SIMULATED PERFORMANCE (Odds 1.80)", "B. ACTUAL ODDS PERFORMANCE", "C. Klasifikasi Liga (MAJOR / MINOR / UNKNOWN)"])
         with tab_sim:
             c1, c2, c3, c4 = st.columns(4)
             c1.metric("Break-Even Win Rate", f"{sim_stats['break_even_win_rate']:.2f}%" if sim_stats["break_even_win_rate"] else "N/A")
@@ -373,20 +371,7 @@ def render_dashboard() -> None:
             tier_rows = []
             for tier_key in ("MAJOR", "MINOR", "UNKNOWN"):
                 t_info = stats["by_league_tier"][tier_key]
-                tier_rows.append({
-                    "Kategori Liga": tier_key,
-                    "Total Match": t_info["total_matches"],
-                    "Settled": t_info["settled_matches"],
-                    "WIN": t_info["win"],
-                    "LOSE": t_info["lose"],
-                    "VOID": t_info["void"],
-                    "PENDING": t_info["pending"],
-                    "Win Rate (%)": f"{t_info['win_rate']:.2f}%",
-                    "Profit Simulasi": format_idr(t_info["simulated_profit"]),
-                    "ROI Simulasi (%)": f"{t_info['simulated_roi']:.2f}%",
-                    "Profit Aktual": format_idr(t_info["actual_profit"]) if t_info["actual_available"] else "NOT AVAILABLE",
-                    "Validitas Sampel": t_info["sample_status"],
-                })
+                tier_rows.append({"Kategori Liga": tier_key, "Total Match": t_info["total_matches"], "Settled": t_info["settled_matches"], "WIN": t_info["win"], "LOSE": t_info["lose"], "VOID": t_info["void"], "PENDING": t_info["pending"], "Win Rate (%)": f"{t_info['win_rate']:.2f}%", "Profit Simulasi": format_idr(t_info["simulated_profit"]), "ROI Simulasi (%)": f"{t_info['simulated_roi']:.2f}%", "Profit Aktual": format_idr(t_info["actual_profit"]) if t_info["actual_available"] else "NOT AVAILABLE", "Validitas Sampel": t_info["sample_status"]})
             st.dataframe(style_dark_table(pd.DataFrame(tier_rows)), use_container_width=True, hide_index=True)
 
     st.subheader("📈 Visualisasi Performa & Distribusi")
@@ -398,7 +383,7 @@ def render_dashboard() -> None:
             status_counts = {"WIN": sim_stats["win"], "LOSE": sim_stats["lose"], "VOID": sim_stats["void"], "PENDING": sim_stats["pending"], "REVIEW": sim_stats["unverified"]}
             non_zero_status = {k: v for k, v in status_counts.items() if v > 0}
             if non_zero_status:
-                fig_donut = px.pie(names=list(non_zero_status.keys()), values=list(non_zero_status.values()), hole=0.55, title="Distribusi Status Pertandingan", color=list(non_zero_status.keys()), color_discrete_map={"WIN": "#16a34a", "LOSE": "#dc2626", "VOID": "#64748b", "PENDING": "#ca8a04", "REVIEW": "#ea580c"})
+                fig_donut = px.pie(names=list(non_zero_status.keys()), values=list(non_zero_status.values()), hole=0.55, title="Distribusi Status Pertandingan", color=list(non_zero_status.keys()), color_discrete_map={"WIN": "#10B981", "LOSE": "#EF4444", "VOID": "#64748B", "PENDING": "#F59E0B", "REVIEW": "#EA580C"})
                 st.plotly_chart(style_fig(fig_donut), use_container_width=True)
             else:
                 st.caption("Data belum cukup untuk grafik distribusi status.")
@@ -407,7 +392,7 @@ def render_dashboard() -> None:
         with g_col2:
             if settled_days:
                 df_days = pd.DataFrame(settled_days)
-                fig_daily = px.bar(df_days, x="trading_day", y="simulated_profit", title="Grafik Profit Harian (Simulasi IDR)", labels={"trading_day": "Trading Day (Cut-off 12:00 WITA)", "simulated_profit": "Net Profit (IDR)"}, color="simulated_profit", color_continuous_scale=["#dc2626", "#16a34a"])
+                fig_daily = px.bar(df_days, x="trading_day", y="simulated_profit", title="Grafik Profit Harian (Simulasi IDR)", labels={"trading_day": "Trading Day (Cut-off 12:00 WITA)", "simulated_profit": "Net Profit (IDR)"}, color="simulated_profit", color_continuous_scale=["#EF4444", "#F59E0B", "#10B981"])
                 st.plotly_chart(style_fig(fig_daily), use_container_width=True)
             else:
                 st.caption("Belum ada pertandingan settled untuk grafik profit harian.")
@@ -415,7 +400,7 @@ def render_dashboard() -> None:
             if settled_days:
                 df_days = pd.DataFrame(settled_days)
                 df_days["cumulative_profit"] = df_days["simulated_profit"].cumsum()
-                fig_cum = px.line(df_days, x="trading_day", y="cumulative_profit", markers=True, title="Grafik Cumulative Profit (Simulasi IDR)", labels={"trading_day": "Trading Day", "cumulative_profit": "Cumulative Profit (IDR)"})
+                fig_cum = px.line(df_days, x="trading_day", y="cumulative_profit", markers=True, title="Grafik Cumulative Profit (Simulasi IDR)", labels={"trading_day": "Trading Day", "cumulative_profit": "Cumulative Profit (IDR)"}, color_discrete_sequence=["#34D399"])
                 st.plotly_chart(style_fig(fig_cum), use_container_width=True)
             else:
                 st.caption("Belum ada pertandingan settled untuk grafik cumulative profit.")
@@ -425,7 +410,7 @@ def render_dashboard() -> None:
             active_tiers = [t for t in tier_list if t["total_matches"] > 0]
             if active_tiers:
                 df_tier = pd.DataFrame(active_tiers)
-                fig_tier = px.bar(df_tier, x="tier", y=["win", "lose"], barmode="group", title="Performa Major vs Minor vs Unknown", labels={"tier": "Klasifikasi Liga", "value": "Jumlah Pertandingan"})
+                fig_tier = px.bar(df_tier, x="tier", y=["win", "lose"], barmode="group", title="Performa Major vs Minor vs Unknown", labels={"tier": "Klasifikasi Liga", "value": "Jumlah Pertandingan"}, color_discrete_sequence=["#10B981", "#EF4444"])
                 st.plotly_chart(style_fig(fig_tier), use_container_width=True)
             else:
                 st.caption("Data belum cukup untuk grafik Major vs Minor.")
@@ -442,34 +427,17 @@ def render_dashboard() -> None:
             entry_mins = [int(r["minute_detected"]) for r in all_records if r.get("minute_detected") is not None]
             if entry_mins:
                 df_min = pd.DataFrame({"minute_detected": entry_mins})
-                fig_min = px.histogram(df_min, x="minute_detected", nbins=7, title="Distribusi Menit Entry (60'–66')", labels={"minute_detected": "Menit Deteksi Entry"})
+                fig_min = px.histogram(df_min, x="minute_detected", nbins=7, title="Distribusi Menit Entry (60'–66')", labels={"minute_detected": "Menit Deteksi Entry"}, color_discrete_sequence=["#3B82F6"])
                 fig_min.update_layout(bargap=0.2)
                 st.plotly_chart(style_fig(fig_min), use_container_width=True)
             else:
                 st.caption("Data belum cukup untuk grafik distribusi menit entry.")
 
-    # =================================================================
-    # 5. RINGKASAN TRADING DAY - INI YANG UDAH DIBENERIN JADI HITAM
-    # =================================================================
     st.subheader("🗓️ Ringkasan Partisi Harian (Cut-Off 12:00 WITA)")
     if not stats["by_trading_day"]:
         st.caption("Belum ada riwayat trading day di database.")
     else:
-        df_td = pd.DataFrame([
-            {
-                "Trading Day": d["trading_day"],
-                "Rekor (W-L)": d["summary_text"],
-                "Total Match": d["total_matches"],
-                "Settled": d["settled_matches"],
-                "VOID": d["void"],
-                "PENDING": d["pending"],
-                "Win Rate": f"{d['win_rate']:.2f}%",
-                "Net Profit (Simulasi)": format_idr(d["simulated_profit"]),
-                "ROI (Simulasi)": f"{d['simulated_roi']:.2f}%",
-                "Net Profit (Aktual)": format_idr(d["actual_profit"]) if d["actual_profit"] is not None else "NOT AVAILABLE",
-            }
-            for d in stats["by_trading_day"]
-        ])
+        df_td = pd.DataFrame([{"Trading Day": d["trading_day"], "Rekor (W-L)": d["summary_text"], "Total Match": d["total_matches"], "Settled": d["settled_matches"], "VOID": d["void"], "PENDING": d["pending"], "Win Rate": f"{d['win_rate']:.2f}%", "Net Profit (Simulasi)": format_idr(d["simulated_profit"]), "ROI (Simulasi)": f"{d['simulated_roi']:.2f}%", "Net Profit (Aktual)": format_idr(d["actual_profit"]) if d["actual_profit"] is not None else "NOT AVAILABLE"} for d in stats["by_trading_day"]])
         st.dataframe(style_dark_table(df_td), use_container_width=True, hide_index=True)
 
     st.subheader("📋 Daftar Pertandingan (20 Terbaru Sesuai Filter)")
@@ -507,7 +475,6 @@ def render_dashboard() -> None:
         filtered_records.append(rec)
 
     top_20 = filtered_records[:20]
-
     if not top_20:
         st.warning("NO LIVE MATCH FOUND — Tidak ada pertandingan yang cocok dengan filter saat ini.")
     else:
@@ -521,24 +488,8 @@ def render_dashboard() -> None:
             odds_disp = f"{rec.get('odds_entry', SIMULATED_ODDS):.2f} (Actual)" if rec.get("odds_entry") is not None else f"{SIMULATED_ODDS:.2f} (Sim)"
             pnl_val = rec.get("actual_profit") if rec.get("odds_entry") is not None else rec.get("simulated_profit", 0)
             act_label = rec.get("activity_label", "NORMAL")
-            table_rows.append({
-                "No": idx,
-                "Match ID": rec.get("match_id"),
-                "Match": f"{rec.get('home_team')} vs {rec.get('away_team')}",
-                "League": rec.get("league"),
-                "Badge": badge_tier,
-                "Activity": act_label,
-                "Min Entry": f"{rec.get('minute_detected')}'",
-                "Entry Score": rec.get("score_at_entry"),
-                "Entry Odds": odds_disp,
-                "Current Score": rec.get("current_score"),
-                "Final Score": rec.get("final_score") or "-",
-                "Result": display_status,
-                "Profit": format_idr(int(pnl_val or 0)) if res in ("WIN", "LOSE", "VOID") else "Rp0 (Pending)",
-                "Trading Day": rec.get("trading_day"),
-            })
+            table_rows.append({"No": idx, "Match ID": rec.get("match_id"), "Match": f"{rec.get('home_team')} vs {rec.get('away_team')}", "League": rec.get("league"), "Badge": badge_tier, "Activity": act_label, "Min Entry": f"{rec.get('minute_detected')}'", "Entry Score": rec.get("score_at_entry"), "Entry Odds": odds_disp, "Current Score": rec.get("current_score"), "Final Score": rec.get("final_score") or "-", "Result": display_status, "Profit": format_idr(int(pnl_val or 0)) if res in ("WIN", "LOSE", "VOID") else "Rp0 (Pending)", "Trading Day": rec.get("trading_day")})
         df_table = pd.DataFrame(table_rows)
-
         def style_table(row):
             styles = [''] * len(row)
             res_val = str(row['Result']).upper()
@@ -560,8 +511,7 @@ def render_dashboard() -> None:
             elif act_val == "PASIF":
                 styles[row.index.get_loc('Activity')] = "background-color: #d32f2f; color: white; font-weight: bold;"
             return styles
-
-        styled = df_table.style.apply(style_table, axis=1).set_properties(**{"background-color": "#121212", "color": "#EAEAEA"}).set_table_styles([{"selector": "th", "props": [("background-color", "#1E293B"), ("color", "white")]}])
+        styled = df_table.style.apply(style_table, axis=1).set_properties(**{"background-color": "#131A26", "color": "#E2E8F0"}).set_table_styles([{"selector": "th", "props": [("background-color", "#1E293B"), ("color", "white")]}])
         st.dataframe(styled, use_container_width=True, hide_index=True)
 
         st.subheader("🔍 Audit Trail & Penjelasan Hasil Pertandingan")
