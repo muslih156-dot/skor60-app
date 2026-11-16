@@ -1,9 +1,7 @@
 """
 app.py
 Dashboard Streamlit Produksi untuk TRADING BOLA MENIT 60 – LAST GOAL SYSTEM.
-FULL VERSION - Format diurai lagi, tidak dipadatkan.
-Atas: Premium Dark + Aksen Warna
-Bawah: Tabel berwarna + Insight Card, tidak monoton lagi
+FULL VERSION - FIX applymap -> map (Pandas baru)
 """
 
 from datetime import datetime, timezone
@@ -148,7 +146,6 @@ def style_dark_table(df):
 def color_profit(val):
     """Buat kolom profit jadi hijau kalau untung, merah kalau rugi."""
     try:
-        s = str(val).replace("Rp", "").replace(".", "").replace("-", "")
         is_neg = str(val).strip().startswith("-")
         if is_neg:
             return "background-color: #3F1D1D; color: #FCA5A5; font-weight: 700;"
@@ -258,7 +255,6 @@ div[data-baseweb="select"] > div, input {
 [data-testid="stMetricValue"], [data-testid="stMetricLabel"] {
     color: #FFFFFF !important;
 }
-/* Section bawah dikasih card */
 .section-card {
     background: linear-gradient(90deg, #1A2436 0%, #131A26 100%);
     border: 1px solid #2A3550;
@@ -659,6 +655,7 @@ def render_dashboard() -> None:
                     }
                 )
             df_tier_tab = pd.DataFrame(tier_rows)
+            # FIX: applymap -> map (Pandas baru)
             styled_tier = (
                 df_tier_tab.style.set_properties(
                     **{
@@ -666,8 +663,8 @@ def render_dashboard() -> None:
                         "color": "#E2E8F0",
                     }
                 )
-                .applymap(color_profit, subset=["Profit Simulasi", "Profit Aktual"])
-                .applymap(color_win_rate, subset=["Win Rate (%)"])
+                .map(color_profit, subset=["Profit Simulasi", "Profit Aktual"])
+                .map(color_win_rate, subset=["Win Rate (%)"])
                 .set_table_styles(
                     [
                         {
@@ -846,7 +843,7 @@ def render_dashboard() -> None:
                 st.caption("Data belum cukup untuk grafik distribusi menit entry.")
 
     # =============================================================
-    # 5. INSIGHT BAWAH - BARU, BIAR BAWAH TIDAK MONOTON
+    # 5. INSIGHT BAWAH
     # =============================================================
     st.markdown(
         """
@@ -903,13 +900,13 @@ def render_dashboard() -> None:
                 )
 
     # =============================================================
-    # 6. RINGKASAN TRADING DAY - SEKARANG BERWARNA
+    # 6. RINGKASAN TRADING DAY - BERWARNA
     # =============================================================
     st.markdown(
         """
         <div class="section-card section-card-blue">
             <h3 style="margin:0; border:none; padding:0;">🗓️ Ringkasan Partisi Harian (Cut-Off 12:00 WITA)</h3>
-            <p style="margin:4px 0 0 0; color:#94A3B8; font-size:0.85rem;">Hijau = untung, Merah = rugi, Kuning = win rate sedang. Nggak perlu baca angka satu-satu lagi.</p>
+            <p style="margin:4px 0 0 0; color:#94A3B8; font-size:0.85rem;">Hijau = untung, Merah = rugi, Kuning = win rate sedang.</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -937,12 +934,13 @@ def render_dashboard() -> None:
                 for d in stats["by_trading_day"]
             ]
         )
+        # FIX: applymap -> map
         styled_td = (
             df_td.style.set_properties(
                 **{"background-color": "#131A26", "color": "#E2E8F0"}
             )
-            .applymap(color_profit, subset=["Net Profit (Simulasi)", "Net Profit (Aktual)"])
-            .applymap(color_win_rate, subset=["Win Rate"])
+            .map(color_profit, subset=["Net Profit (Simulasi)", "Net Profit (Aktual)"])
+            .map(color_win_rate, subset=["Win Rate"])
             .set_table_styles(
                 [
                     {
@@ -958,7 +956,7 @@ def render_dashboard() -> None:
         st.dataframe(styled_td, use_container_width=True, hide_index=True)
 
     # =============================================================
-    # 7. TABEL PERTANDINGAN & FILTER - SEKARANG LEBIH HIDUP
+    # 7. TABEL PERTANDINGAN & FILTER
     # =============================================================
     st.markdown(
         """
@@ -1139,7 +1137,6 @@ def render_dashboard() -> None:
                 styles[row.index.get_loc("Activity")] = (
                     "background-color: #d32f2f; color: white; font-weight: bold;"
                 )
-            # Profit berwarna juga
             profit_str = str(row["Profit"])
             if profit_str.startswith("-"):
                 styles[row.index.get_loc("Profit")] = (
@@ -1149,7 +1146,6 @@ def render_dashboard() -> None:
                 styles[row.index.get_loc("Profit")] = (
                     "background-color: #123325; color: #6EE7B7; font-weight: bold;"
                 )
-            # Badge MAJOR / MINOR
             if str(row["Badge"]).upper() == "MAJOR":
                 styles[row.index.get_loc("Badge")] = (
                     "background-color: #1E3A5F; color: #93C5FD; font-weight: bold;"
