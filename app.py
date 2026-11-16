@@ -1,7 +1,7 @@
 """
 app.py
 TRADING BOLA MENIT 60 – LAST GOAL SYSTEM
-FULL VERSION - Bawah sekarang lebih berwarna & hidup
+FIX TENGAH: Daftar Pertandingan pakai HTML Table (st.dataframe tidak bisa tampilkan warna)
 """
 
 from datetime import datetime, timezone
@@ -14,14 +14,7 @@ import streamlit as st
 from zoneinfo import ZoneInfo
 
 try:
-    from config import (
-        CURRENCY,
-        DEFAULT_STAKE,
-        MATCHES_JSON_PATH,
-        MIN_SAMPLE_SIZE_RELIABLE,
-        SIMULATED_ODDS,
-        TIMEZONE_NAME,
-    )
+    from config import CURRENCY, DEFAULT_STAKE, MATCHES_JSON_PATH, MIN_SAMPLE_SIZE_RELIABLE, SIMULATED_ODDS, TIMEZONE_NAME
 except Exception:
     CURRENCY = "Rp"
     DEFAULT_STAKE = 50000
@@ -29,28 +22,20 @@ except Exception:
     SIMULATED_ODDS = 1.90
     TIMEZONE_NAME = "Asia/Makassar"
     from pathlib import Path
-
     MATCHES_JSON_PATH = Path("data/matches.json")
 
 try:
     from database import TradingDatabase, load_scan_metadata
 except Exception:
     TradingDatabase = None
-
     def load_scan_metadata():
         return {}
 
 try:
     from settlement import audit_result
 except Exception:
-
     def audit_result(record):
-        return {
-            "label": record.get("activity_label", "NORMAL"),
-            "explanation": "Audit cadangan",
-            "audit_passed": True,
-            "issues": [],
-        }
+        return {"label": record.get("activity_label", "NORMAL"), "explanation": "Audit cadangan", "audit_passed": True, "issues": []}
 
 try:
     from statistics import compute_full_dashboard_statistics
@@ -84,44 +69,21 @@ def _try_run_scan():
 
 WITA_TZ = ZoneInfo(TIMEZONE_NAME)
 
-# =====================================================================
-# HELPER WARNA BARU - LEBIH TERANG & HIDUP UNTUK BAWAH
-# =====================================================================
 def style_fig(fig):
-    fig.update_layout(
-        template="plotly_dark",
-        paper_bgcolor="#131A26",
-        plot_bgcolor="#131A26",
-        font=dict(color="#E2E8F0", size=12),
-        title_font=dict(color="#FFFFFF", size=14, family="Arial Black"),
-        xaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")),
-        yaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")),
-        legend=dict(bgcolor="#131A26", font=dict(color="#E2E8F0")),
-        margin=dict(l=10, r=10, t=50, b=10),
-    )
+    fig.update_layout(template="plotly_dark", paper_bgcolor="#131A26", plot_bgcolor="#131A26", font=dict(color="#E2E8F0", size=12), title_font=dict(color="#FFFFFF", size=14, family="Arial Black"), xaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")), yaxis=dict(gridcolor="#2A3550", zerolinecolor="#2A3550", tickfont=dict(color="#94A3B8")), legend=dict(bgcolor="#131A26", font=dict(color="#E2E8F0")), margin=dict(l=10, r=10, t=50, b=10))
     return fig
 
 def style_dark_table(df):
-    return (
-        df.style.set_properties(
-            **{"background-color": "#1A2436", "color": "#E2E8F0", "border-color": "#2A3550"}
-        ).set_table_styles(
-            [
-                {"selector": "th", "props": [("background-color", "#1E3A5F"), ("color", "white"), ("border-color", "#2A3550"), ("font-weight", "800")]},
-                {"selector": "td", "props": [("border-color", "#2A3550")]},
-            ]
-        )
-    )
+    return df.style.set_properties(**{"background-color": "#1A2436", "color": "#E2E8F0", "border-color": "#2A3550"}).set_table_styles([{"selector": "th", "props": [("background-color", "#1E3A5F"), ("color", "white"), ("border-color", "#2A3550"), ("font-weight", "800")]}, {"selector": "td", "props": [("border-color", "#2A3550")]}])
 
-# --- WARNA BARU: Lebih neon, bukan gelap lagi ---
 def color_profit_vivid(val):
     s = str(val).strip()
     if s.startswith("-"):
-        return "background-color: #FF5252; color: #FFFFFF; font-weight: 800; border-radius: 6px;"
+        return "background-color: #FF5252; color: #FFFFFF; font-weight: 800;"
     if s.startswith("Rp0") or s == "Rp0 (Pending)" or s == "NOT AVAILABLE":
         return "background-color: #2A3550; color: #94A3B8; font-weight: 600;"
     if s.startswith("Rp"):
-        return "background-color: #00C853; color: #FFFFFF; font-weight: 800; border-radius: 6px;"
+        return "background-color: #00C853; color: #FFFFFF; font-weight: 800;"
     return ""
 
 def color_profit(val):
@@ -153,7 +115,6 @@ def color_roi(val):
         return ""
 
 def color_rekor(val):
-    # Contoh: "10W - 8L" -> kalau W lebih banyak hijau, kalau kalah merah
     try:
         s = str(val).upper()
         if "W" in s and "L" in s:
@@ -168,38 +129,110 @@ def color_rekor(val):
         pass
     return ""
 
-st.set_page_config(
-    page_title="TRADING BOLA MENIT 60 – LAST GOAL SYSTEM",
-    page_icon="⚽",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
+# ============ HELPER BARU: TABEL HTML BERWARNA UNTUK TENGAH ============
+def pill(text, bg, fg="#FFFFFF"):
+    return f'<span style="display:inline-block; padding:3px 10px; border-radius:20px; background:{bg}; color:{fg}; font-weight:800; font-size:11px; white-space:nowrap;">{text}</span>'
 
-st.markdown(
-    """
+def render_match_table_html(table_rows):
+    """Render Daftar Pertandingan sebagai HTML - warnanya pasti muncul."""
+    header_style = "background: linear-gradient(90deg, #1E3A5F, #6D28D9); color:white; padding:8px 6px; font-size:12px; font-weight:800; text-align:center; white-space:nowrap;"
+    html = []
+    html.append('<div style="overflow-x:auto; border:1px solid #2A3550; border-radius:12px;">')
+    html.append('<table style="width:100%; border-collapse:collapse; font-size:12px; color:#fff;">')
+    html.append('<thead><tr>')
+    for h in ["No", "Match ID", "Match", "League", "Badge", "Activity", "Min", "Entry", "Odds", "Current", "Final", "Result", "Profit", "Day"]:
+        html.append(f'<th style="{header_style}">{h}</th>')
+    html.append('</tr></thead><tbody>')
+    for i, r in enumerate(table_rows):
+        bg_row = "#1A2436" if i % 2 == 0 else "#131A26"
+        # Badge
+        badge = str(r["Badge"]).upper()
+        if badge == "MAJOR":
+            badge_html = pill("🏆 MAJOR", "#2979FF")
+        elif badge == "MINOR":
+            badge_html = pill("⭐ MINOR", "#FFAB00", "#000")
+        else:
+            badge_html = pill("❓ UNKNOWN", "#78909C")
+        # Activity
+        act = str(r["Activity"]).upper()
+        if act == "AKTIF":
+            act_html = pill("🟢 AKTIF", "#00C853")
+        elif act == "PASIF":
+            act_html = pill("🔴 PASIF", "#FF5252")
+        elif "NO_STATS" in act:
+            act_html = pill("🟠 NO DATA", "#FF6D00")
+        else:
+            act_html = pill(act, "#37474F")
+        # League
+        league = str(r["League"])
+        if "SERIE A" in league.upper() or "PREMIER" in league.upper() or "LA LIGA" in league.upper():
+            league_html = pill(league, "#7C4DFF")
+        elif "UNKNOWN" in league.upper():
+            league_html = pill(league, "#37474F", "#CFD8DC")
+        else:
+            league_html = pill(league, "#00695C")
+        # Result
+        res = str(r["Result"]).upper()
+        if res == "WIN":
+            res_html = pill("✅ WIN", "#00C853")
+        elif res == "LOSE":
+            res_html = pill("❌ LOSE", "#FF5252")
+        elif res == "LIVE":
+            res_html = pill("🔵 LIVE", "#2979FF")
+        elif res == "PENDING":
+            res_html = pill("🟡 PENDING", "#FFAB00", "#000")
+        elif res == "VOID":
+            res_html = pill("⚪ VOID", "#78909C")
+        else:
+            res_html = pill(res, "#FF6D00")
+        # Profit
+        profit = str(r["Profit"])
+        if profit.startswith("-"):
+            profit_html = pill(profit, "#FF5252")
+        elif profit.startswith("Rp") and "Rp0" not in profit:
+            profit_html = pill(profit, "#00C853")
+        else:
+            profit_html = pill(profit, "#2A3550", "#94A3B8")
+        # Skor
+        cell = f"padding:7px 6px; text-align:center; border-bottom:1px solid #2A3550; background:{bg_row};"
+        cell_left = f"padding:7px 6px; text-align:left; border-bottom:1px solid #2A3550; background:{bg_row}; font-weight:600;"
+        html.append(f"""
+        <tr>
+            <td style="{cell}"><b style="background:#1E3A5F; padding:3px 8px; border-radius:8px;">{r['No']}</b></td>
+            <td style="{cell}">{r['Match ID']}</td>
+            <td style="{cell_left}">{r['Match']}</td>
+            <td style="{cell}">{league_html}</td>
+            <td style="{cell}">{badge_html}</td>
+            <td style="{cell}">{act_html}</td>
+            <td style="{cell}"><span style="background:#01579B; padding:3px 8px; border-radius:8px; font-weight:800;">{r['Min Entry']}</span></td>
+            <td style="{cell}"><b style="color:#FFCC80;">{r['Entry Score']}</b></td>
+            <td style="{cell}">{r['Entry Odds']}</td>
+            <td style="{cell}"><b>{r['Current Score']}</b></td>
+            <td style="{cell}"><b style="color:#B3E5FC;">{r['Final Score']}</b></td>
+            <td style="{cell}">{res_html}</td>
+            <td style="{cell}">{profit_html}</td>
+            <td style="{cell}"><span style="background:#4527A0; padding:3px 8px; border-radius:8px; font-weight:700;">{r['Trading Day']}</span></td>
+        </tr>
+        """)
+    html.append('</tbody></table></div>')
+    return "".join(html)
+
+st.set_page_config(page_title="TRADING BOLA MENIT 60 – LAST GOAL SYSTEM", page_icon="⚽", layout="wide", initial_sidebar_state="expanded")
+
+st.markdown("""
 <style>
-.stApp, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] {
-    background: radial-gradient(1200px 600px at 20% 0%, #111B2E 0%, #0A0F1A 45%, #080A10 100%) !important;
-    background-color: #0A0F1A !important;
-}
+.stApp, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] { background: radial-gradient(1200px 600px at 20% 0%, #111B2E 0%, #0A0F1A 45%, #080A10 100%) !important; background-color: #0A0F1A !important; }
 [data-testid="stMainBlockContainer"] { padding-top: 18px !important; max-width: 100% !important; }
 h1, h2, h3, h4, p, span, div, label, li { color: #E2E8F0 !important; }
 small, .stCaption, [data-testid="stCaptionContainer"] { color: #94A3B8 !important; }
 h3 { border-left: 5px solid #10B981 !important; padding-left: 12px !important; }
-[data-testid="stExpander"], [data-testid="stTabs"], [data-testid="stSelectbox"], [data-testid="stDataFrame"] {
-    background-color: #131A26 !important; border: 1px solid #2A3550 !important; border-radius: 14px !important;
-}
+[data-testid="stExpander"], [data-testid="stTabs"], [data-testid="stSelectbox"], [data-testid="stDataFrame"] { background-color: #131A26 !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; }
 [data-testid="stExpander"] summary, button[data-baseweb="tab"] { color: #E2E8F0 !important; background-color: #131A26 !important; }
 button[data-baseweb="tab"][aria-selected="true"] { background-color: #1E293B !important; color: #FFFFFF !important; border-bottom: 3px solid #10B981 !important; }
 div[data-baseweb="select"] > div, input { background-color: #1A2436 !important; color: #FFFFFF !important; border-color: #2A3550 !important; }
-.stButton > button {
-    background: linear-gradient(90deg, #0EA5E9, #10B981) !important; color: #FFFFFF !important; border: none !important;
-    font-weight: 700 !important; border-radius: 10px !important; box-shadow: 0 4px 18px rgba(16,185,129,0.35) !important;
-}
+.stButton > button { background: linear-gradient(90deg, #0EA5E9, #10B981) !important; color: #FFFFFF !important; border: none !important; font-weight: 700 !important; border-radius: 10px !important; box-shadow: 0 4px 18px rgba(16,185,129,0.35) !important; }
 [data-testid="stDataFrame"], [data-testid="stDataFrame"] > div, [data-testid="stDataFrame"] iframe { background-color: #131A26 !important; color: #E2E8F0 !important; }
-[data-testid="stPlotlyChart"], [data-testid="stPlotlyChart"] > div {
-    background-color: #131A26 !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; padding: 8px !important; box-shadow: 0 6px 24px rgba(0,0,0,0.35) !important;
-}
+[data-testid="stPlotlyChart"], [data-testid="stPlotlyChart"] > div { background-color: #131A26 !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; padding: 8px !important; box-shadow: 0 6px 24px rgba(0,0,0,0.35) !important; }
 [data-testid="stAlert"] { background-color: #131A26 !important; color: #E2E8F0 !important; border: 1px solid #2A3550 !important; border-left: 5px solid #10B981 !important; border-radius: 12px !important; }
 [data-testid="stAlert"] p, [data-testid="stAlert"] span, [data-testid="stAlert"] div { color: #E2E8F0 !important; }
 [data-testid="stMetric"] { background-color: #131A26 !important; border: 1px solid #2A3550 !important; border-radius: 14px !important; padding: 12px !important; }
@@ -208,33 +241,27 @@ div[data-baseweb="select"] > div, input { background-color: #1A2436 !important; 
 .section-card-blue { border-left: 5px solid #3B82F6 !important; }
 .section-card-green { border-left: 5px solid #10B981 !important; }
 .section-card-pink { border-left: 5px solid #EC4899 !important; }
-/* Audit Card berwarna */
 .audit-card-blue { background: linear-gradient(180deg, #1E3A5F 0%, #131A26 100%); border: 1px solid #3B82F6; border-top: 4px solid #3B82F6; border-radius: 14px; padding: 14px; }
 .audit-card-gold { background: linear-gradient(180deg, #4A3410 0%, #131A26 100%); border: 1px solid #FFAB00; border-top: 4px solid #FFAB00; border-radius: 14px; padding: 14px; }
 .audit-card-green { background: linear-gradient(180deg, #0F3D33 0%, #131A26 100%); border: 1px solid #00C853; border-top: 4px solid #00C853; border-radius: 14px; padding: 14px; }
 </style>
-""",
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
 
-st.markdown(
-    """
-    <style>
-    .main-header { background: linear-gradient(90deg, #0F172A 0%, #1E3A5F 45%, #0F3D33 100%); color: #f8fafc; padding: 1.4rem 1.8rem; border-radius: 16px; border-left: 6px solid #10B981; border: 1px solid #2A3550; box-shadow: 0 8px 30px rgba(0,0,0,0.45); margin-bottom: 1.2rem; }
-    .metric-card { background: linear-gradient(180deg, #1A2436 0%, #131A26 100%); color: #f8fafc; padding: 1.1rem; border-radius: 14px; border: 1px solid #2A3550; height: 100%; box-shadow: 0 6px 20px rgba(0,0,0,0.30); }
-    .metric-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: #94A3B8; margin-bottom: 0.35rem; }
-    .metric-value { font-size: 1.55rem; font-weight: 800; color: #ffffff; }
-    .metric-sub { font-size: 0.82rem; color: #CBD5E1; margin-top: 0.3rem; }
-    .profit-green { color: #34D399 !important; } .profit-red { color: #F87171 !important; }
-    .accent-blue { color: #60A5FA !important; } .accent-gold { color: #FBBF24 !important; } .accent-purple { color: #A78BFA !important; }
-    .insight-card { background: linear-gradient(180deg, #1A2436 0%, #131A26 100%); border: 1px solid #2A3550; border-radius: 14px; padding: 14px; text-align: center; }
-    .insight-label { font-size: 0.75rem; letter-spacing: 0.08em; color: #94A3B8; text-transform: uppercase; }
-    .insight-value { font-size: 1.35rem; font-weight: 800; margin-top: 6px; }
-    .insight-sub { font-size: 0.80rem; color: #CBD5E1; margin-top: 4px; }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+st.markdown("""
+<style>
+.main-header { background: linear-gradient(90deg, #0F172A 0%, #1E3A5F 45%, #0F3D33 100%); color: #f8fafc; padding: 1.4rem 1.8rem; border-radius: 16px; border-left: 6px solid #10B981; border: 1px solid #2A3550; box-shadow: 0 8px 30px rgba(0,0,0,0.45); margin-bottom: 1.2rem; }
+.metric-card { background: linear-gradient(180deg, #1A2436 0%, #131A26 100%); color: #f8fafc; padding: 1.1rem; border-radius: 14px; border: 1px solid #2A3550; height: 100%; box-shadow: 0 6px 20px rgba(0,0,0,0.30); }
+.metric-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: #94A3B8; margin-bottom: 0.35rem; }
+.metric-value { font-size: 1.55rem; font-weight: 800; color: #ffffff; }
+.metric-sub { font-size: 0.82rem; color: #CBD5E1; margin-top: 0.3rem; }
+.profit-green { color: #34D399 !important; } .profit-red { color: #F87171 !important; }
+.accent-blue { color: #60A5FA !important; } .accent-gold { color: #FBBF24 !important; } .accent-purple { color: #A78BFA !important; }
+.insight-card { background: linear-gradient(180deg, #1A2436 0%, #131A26 100%); border: 1px solid #2A3550; border-radius: 14px; padding: 14px; text-align: center; }
+.insight-label { font-size: 0.75rem; letter-spacing: 0.08em; color: #94A3B8; text-transform: uppercase; }
+.insight-value { font-size: 1.35rem; font-weight: 800; margin-top: 6px; }
+.insight-sub { font-size: 0.80rem; color: #CBD5E1; margin-top: 4px; }
+</style>
+""", unsafe_allow_html=True)
 
 def format_idr(amount: int) -> str:
     sign = "-" if amount < 0 else ""
@@ -312,33 +339,17 @@ def render_dashboard() -> None:
     source_status = scan_meta.get("source_status") or "NEVER_SCANNED"
     last_db_update_str = "DARI REPO LAMA skor60 (via data_loader.py)"
 
-    st.markdown(
-        f"""
+    st.markdown(f"""
         <div class="main-header">
             <h2 style="margin:0; font-weight:800;">⚽ TRADING BOLA MENIT 60 — <span style="color:#34D399;">LAST GOAL SYSTEM</span></h2>
-            <p style="margin:6px 0 10px 0; color:#94A3B8;">
-                Market: <b style="color:#FBBF24;">OVER 0.5 GOAL AFTER ENTRY (Menit 60'–66', Skor Entry 0-0)</b> |
-                Cut-Off Trading Day: <b style="color:#fff;">12:00 WITA</b>
-            </p>
+            <p style="margin:6px 0 10px 0; color:#94A3B8;">Market: <b style="color:#FBBF24;">OVER 0.5 GOAL AFTER ENTRY (Menit 60'–66', Skor Entry 0-0)</b> | Cut-Off Trading Day: <b style="color:#fff;">12:00 WITA</b></p>
             <div style="display:flex; flex-wrap:wrap; gap:18px; font-size:0.86rem;">
-                <span>🟢 <b>System Status:</b> {source_status}</span>
-                <span>📡 <b>Data Source:</b> ESPN API (All + Multi-League)</span>
-                <span>🕒 <b>Last Scan:</b> {last_scan_wita}</span>
-                <span>💾 <b>Last DB Update:</b> {last_db_update_str}</span>
-                <span>⏰ <b>Current WITA:</b> {now_wita.strftime('%Y-%m-%d %H:%M:%S')}</span>
-                <span>⚽ <b>Total Matches:</b> {len(all_records)}</span>
+                <span>🟢 <b>System Status:</b> {source_status}</span><span>📡 <b>Data Source:</b> ESPN API (All + Multi-League)</span><span>🕒 <b>Last Scan:</b> {last_scan_wita}</span><span>💾 <b>Last DB Update:</b> {last_db_update_str}</span><span>⏰ <b>Current WITA:</b> {now_wita.strftime('%Y-%m-%d %H:%M:%S')}</span><span>⚽ <b>Total Matches:</b> {len(all_records)}</span>
             </div>
         </div>
-        """,
-        unsafe_allow_html=True,
-    )
+        """, unsafe_allow_html=True)
 
-    st.info(
-        f"🕒 **Panduan Monitoring Jam Aktif (WITA):** {get_peak_hours_label(now_wita)} "
-        f"*(Panduan monitoring, bukan jaminan jumlah pertandingan).* "
-        f"Pertandingan LIVE terdeteksi pada scan terakhir: **{scan_meta.get('live_matches_seen', 0)}**"
-    )
-
+    st.info(f"🕒 **Panduan Monitoring Jam Aktif (WITA):** {get_peak_hours_label(now_wita)} *(Panduan monitoring, bukan jaminan jumlah pertandingan).* Pertandingan LIVE terdeteksi pada scan terakhir: **{scan_meta.get('live_matches_seen', 0)}**")
     sim_stats = stats["simulated"]
     act_stats = stats["actual"]
     major_stats = stats["by_league_tier"]["MAJOR"]
@@ -358,7 +369,6 @@ def render_dashboard() -> None:
     with cols[4]:
         major_badge = ("⚠️ LOW SAMPLE SIZE" if major_stats["settled_matches"] < MIN_SAMPLE_SIZE_RELIABLE else "✅ SAMPLE OK")
         st.markdown(f"""<div class="metric-card" style="border-top: 4px solid #EC4899;"><div class="metric-title">🏆 CARD 5 – MAJOR PERFORMANCE</div><div class="metric-value">{major_stats['win_rate']:.2f}% WR</div><div class="metric-sub">Profit (Sim): <b>{format_idr(major_stats['simulated_profit'])}</b> | ROI: <b>{major_stats['simulated_roi']:.2f}%</b><br/>Sampel: <b>{major_stats['settled_matches']}</b> settled ({major_badge})</div></div>""", unsafe_allow_html=True)
-
     st.write("")
 
     with st.expander("📊 Detail Statistik Kuantitatif, Break-Even, EV, & Klasifikasi Liga (Major / Minor / Unknown)", expanded=True):
@@ -389,13 +399,7 @@ def render_dashboard() -> None:
                 t_info = stats["by_league_tier"][tier_key]
                 tier_rows.append({"Kategori Liga": tier_key, "Total Match": t_info["total_matches"], "Settled": t_info["settled_matches"], "WIN": t_info["win"], "LOSE": t_info["lose"], "VOID": t_info["void"], "PENDING": t_info["pending"], "Win Rate (%)": f"{t_info['win_rate']:.2f}%", "Profit Simulasi": format_idr(t_info["simulated_profit"]), "ROI Simulasi (%)": f"{t_info['simulated_roi']:.2f}%", "Profit Aktual": format_idr(t_info["actual_profit"]) if t_info["actual_available"] else "NOT AVAILABLE", "Validitas Sampel": t_info["sample_status"]})
             df_tier_tab = pd.DataFrame(tier_rows)
-            styled_tier = (
-                df_tier_tab.style.set_properties(**{"background-color": "#1A2436", "color": "#E2E8F0"})
-                .map(color_profit_vivid, subset=["Profit Simulasi", "Profit Aktual"])
-                .map(color_win_rate_vivid, subset=["Win Rate (%)"])
-                .map(color_roi, subset=["ROI Simulasi (%)"])
-                .set_table_styles([{"selector": "th", "props": [("background-color", "#1E3A5F"), ("color", "white"), ("font-weight", "800")]}])
-            )
+            styled_tier = df_tier_tab.style.set_properties(**{"background-color": "#1A2436", "color": "#E2E8F0"}).map(color_profit_vivid, subset=["Profit Simulasi", "Profit Aktual"]).map(color_win_rate_vivid, subset=["Win Rate (%)"]).map(color_roi, subset=["ROI Simulasi (%)"]).set_table_styles([{"selector": "th", "props": [("background-color", "#1E3A5F"), ("color", "white"), ("font-weight", "800")]}])
             st.dataframe(styled_tier, use_container_width=True, hide_index=True)
 
     st.markdown("""<div class="section-card section-card-green"><h3 style="margin:0; border:none; padding:0;">📈 Visualisasi Performa & Distribusi</h3><p style="margin:4px 0 0 0; color:#94A3B8; font-size:0.85rem;">Grafik profit, win rate, dan distribusi entry — semua sudah dark + berwarna.</p></div>""", unsafe_allow_html=True)
@@ -409,8 +413,6 @@ def render_dashboard() -> None:
             if non_zero_status:
                 fig_donut = px.pie(names=list(non_zero_status.keys()), values=list(non_zero_status.values()), hole=0.55, title="Distribusi Status Pertandingan", color=list(non_zero_status.keys()), color_discrete_map={"WIN": "#00C853", "LOSE": "#FF5252", "VOID": "#64748B", "PENDING": "#FFAB00", "REVIEW": "#FF6D00"})
                 st.plotly_chart(style_fig(fig_donut), use_container_width=True)
-            else:
-                st.caption("Data belum cukup untuk grafik distribusi status.")
         day_summaries = list(reversed(stats["by_trading_day"]))
         settled_days = [d for d in day_summaries if d["settled_matches"] > 0]
         with g_col2:
@@ -418,16 +420,12 @@ def render_dashboard() -> None:
                 df_days = pd.DataFrame(settled_days)
                 fig_daily = px.bar(df_days, x="trading_day", y="simulated_profit", title="Grafik Profit Harian (Simulasi IDR)", labels={"trading_day": "Trading Day (Cut-off 12:00 WITA)", "simulated_profit": "Net Profit (IDR)"}, color="simulated_profit", color_continuous_scale=["#FF5252", "#FFAB00", "#00C853"])
                 st.plotly_chart(style_fig(fig_daily), use_container_width=True)
-            else:
-                st.caption("Belum ada pertandingan settled untuk grafik profit harian.")
         with g_col3:
             if settled_days:
                 df_days = pd.DataFrame(settled_days)
                 df_days["cumulative_profit"] = df_days["simulated_profit"].cumsum()
                 fig_cum = px.line(df_days, x="trading_day", y="cumulative_profit", markers=True, title="Grafik Cumulative Profit (Simulasi IDR)", labels={"trading_day": "Trading Day", "cumulative_profit": "Cumulative Profit (IDR)"}, color_discrete_sequence=["#00E676"])
                 st.plotly_chart(style_fig(fig_cum), use_container_width=True)
-            else:
-                st.caption("Belum ada pertandingan settled untuk grafik cumulative profit.")
         g_col4, g_col5, g_col6 = st.columns(3)
         with g_col4:
             tier_list = [stats["by_league_tier"]["MAJOR"], stats["by_league_tier"]["MINOR"], stats["by_league_tier"]["UNKNOWN"]]
@@ -436,8 +434,6 @@ def render_dashboard() -> None:
                 df_tier = pd.DataFrame(active_tiers)
                 fig_tier = px.bar(df_tier, x="tier", y=["win", "lose"], barmode="group", title="Performa Major vs Minor vs Unknown", labels={"tier": "Klasifikasi Liga", "value": "Jumlah Pertandingan"}, color_discrete_sequence=["#00C853", "#FF5252"])
                 st.plotly_chart(style_fig(fig_tier), use_container_width=True)
-            else:
-                st.caption("Data belum cukup untuk grafik Major vs Minor.")
         with g_col5:
             actual_settled = [r for r in all_records if r.get("odds_entry") is not None and r.get("result") in ("WIN", "LOSE")]
             if len(actual_settled) >= 2:
@@ -454,12 +450,7 @@ def render_dashboard() -> None:
                 fig_min = px.histogram(df_min, x="minute_detected", nbins=7, title="Distribusi Menit Entry (60'–66')", labels={"minute_detected": "Menit Deteksi Entry"}, color_discrete_sequence=["#40C4FF"])
                 fig_min.update_layout(bargap=0.2)
                 st.plotly_chart(style_fig(fig_min), use_container_width=True)
-            else:
-                st.caption("Data belum cukup untuk grafik distribusi menit entry.")
 
-    # =============================================================
-    # INSIGHT BAWAH
-    # =============================================================
     st.markdown("""<div class="section-card"><h3 style="margin:0; border:none; padding:0;">🔥 Insight Trading Day</h3><p style="margin:4px 0 0 0; color:#94A3B8; font-size:0.85rem;">Ringkasan cepat sebelum masuk ke tabel detail.</p></div>""", unsafe_allow_html=True)
     if stats["by_trading_day"]:
         days_for_insight = [d for d in stats["by_trading_day"] if d["settled_matches"] > 0]
@@ -476,28 +467,16 @@ def render_dashboard() -> None:
                 avg_color = "#00E676" if avg_profit >= 0 else "#FF5252"
                 st.markdown(f"""<div class="insight-card" style="border-top: 4px solid #FFAB00;"><div class="insight-label">📊 Rata-rata Profit / Hari</div><div class="insight-value" style="color:{avg_color};">{format_idr(int(avg_profit))}</div><div class="insight-sub">Dari {len(days_for_insight)} hari settled • Total {format_idr(sim_stats['net_profit'])}</div></div>""", unsafe_allow_html=True)
 
-    # =============================================================
-    # RINGKASAN TRADING DAY - SEKARANG LEBIH TERANG
-    # =============================================================
-    st.markdown("""<div class="section-card section-card-blue"><h3 style="margin:0; border:none; padding:0;">🗓️ Ringkasan Partisi Harian (Cut-Off 12:00 WITA)</h3><p style="margin:4px 0 0 0; color:#94A3B8; font-size:0.85rem;">Hijau neon = untung besar, Merah terang = rugi, Kuning emas = win rate sedang. Rekor & ROI juga sudah berwarna.</p></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="section-card section-card-blue"><h3 style="margin:0; border:none; padding:0;">🗓️ Ringkasan Partisi Harian (Cut-Off 12:00 WITA)</h3><p style="margin:4px 0 0 0; color:#94A3B8; font-size:0.85rem;">Hijau neon = untung besar, Merah terang = rugi, Kuning emas = win rate sedang.</p></div>""", unsafe_allow_html=True)
     if not stats["by_trading_day"]:
         st.caption("Belum ada riwayat trading day di database.")
     else:
         df_td = pd.DataFrame([{"Trading Day": d["trading_day"], "Rekor (W-L)": d["summary_text"], "Total Match": d["total_matches"], "Settled": d["settled_matches"], "VOID": d["void"], "PENDING": d["pending"], "Win Rate": f"{d['win_rate']:.2f}%", "Net Profit (Simulasi)": format_idr(d["simulated_profit"]), "ROI (Simulasi)": f"{d['simulated_roi']:.2f}%", "Net Profit (Aktual)": format_idr(d["actual_profit"]) if d["actual_profit"] is not None else "NOT AVAILABLE"} for d in stats["by_trading_day"]])
-        styled_td = (
-            df_td.style.set_properties(**{"background-color": "#1A2436", "color": "#FFFFFF", "font-weight": "600"})
-            .map(color_profit_vivid, subset=["Net Profit (Simulasi)", "Net Profit (Aktual)"])
-            .map(color_win_rate_vivid, subset=["Win Rate"])
-            .map(color_roi, subset=["ROI (Simulasi)"])
-            .map(color_rekor, subset=["Rekor (W-L)"])
-            .set_table_styles([{"selector": "th", "props": [("background-color", "#1E3A5F"), ("color", "white"), ("font-weight", "800"), ("font-size", "13px")]}])
-        )
+        styled_td = df_td.style.set_properties(**{"background-color": "#1A2436", "color": "#FFFFFF", "font-weight": "600"}).map(color_profit_vivid, subset=["Net Profit (Simulasi)", "Net Profit (Aktual)"]).map(color_win_rate_vivid, subset=["Win Rate"]).map(color_roi, subset=["ROI (Simulasi)"]).map(color_rekor, subset=["Rekor (W-L)"]).set_table_styles([{"selector": "th", "props": [("background-color", "#1E3A5F"), ("color", "white"), ("font-weight", "800")]}])
         st.dataframe(styled_td, use_container_width=True, hide_index=True)
 
-    # =============================================================
-    # DAFTAR PERTANDINGAN - SEKARANG SEMUA KOLOM BERWARNA
-    # =============================================================
-    st.markdown("""<div class="section-card section-card-pink"><h3 style="margin:0; border:none; padding:0;">📋 Daftar Pertandingan (20 Terbaru Sesuai Filter)</h3><p style="margin:4px 0 0 0; color:#94A3B8; font-size:0.85rem;">Semua kolom sekarang berwarna: Badge, Activity, Result, Profit, League. Bukan cuma 2 kolom lagi.</p></div>""", unsafe_allow_html=True)
+    # ===== TENGAH - SUDAH DIGANTI JADI HTML, PASTI BERWARNA =====
+    st.markdown("""<div class="section-card section-card-pink"><h3 style="margin:0; border:none; padding:0;">📋 Daftar Pertandingan (20 Terbaru Sesuai Filter)</h3><p style="margin:4px 0 0 0; color:#94A3B8; font-size:0.85rem;">Sekarang pakai tabel HTML — warna pill-nya pasti muncul, tidak ditimpa Streamlit lagi.</p></div>""", unsafe_allow_html=True)
     f_col1, f_col2 = st.columns([2, 1])
     with f_col1:
         status_filter = st.selectbox("Filter Kategori / Status:", options=["Semua", "LIVE", "WIN", "LOSE", "PENDING", "VOID", "REVIEW", "MAJOR", "MINOR"], index=0)
@@ -546,78 +525,9 @@ def render_dashboard() -> None:
             pnl_val = rec.get("actual_profit") if rec.get("odds_entry") is not None else rec.get("simulated_profit", 0)
             act_label = rec.get("activity_label", "NORMAL")
             table_rows.append({"No": idx, "Match ID": rec.get("match_id"), "Match": f"{rec.get('home_team')} vs {rec.get('away_team')}", "League": rec.get("league"), "Badge": badge_tier, "Activity": act_label, "Min Entry": f"{rec.get('minute_detected')}'", "Entry Score": rec.get("score_at_entry"), "Entry Odds": odds_disp, "Current Score": rec.get("current_score"), "Final Score": rec.get("final_score") or "-", "Result": display_status, "Profit": format_idr(int(pnl_val or 0)) if res in ("WIN", "LOSE", "VOID") else "Rp0 (Pending)", "Trading Day": rec.get("trading_day")})
-        df_table = pd.DataFrame(table_rows)
+        # RENDER HTML - INI KUNCINYA, BUKAN st.dataframe LAGI
+        st.markdown(render_match_table_html(table_rows), unsafe_allow_html=True)
 
-        def style_table_vivid(row):
-            styles = [""] * len(row)
-            # No - gradasi
-            styles[row.index.get_loc("No")] = "background-color: #1E3A5F; color: #FFFFFF; font-weight: 800; text-align: center;"
-            # League - warna beda per liga populer
-            league = str(row["League"]).upper()
-            if "SERIE A" in league or "PREMIER" in league or "LA LIGA" in league:
-                styles[row.index.get_loc("League")] = "background-color: #7C4DFF; color: #FFFFFF; font-weight: 700;"
-            elif "UNKNOWN" in league:
-                styles[row.index.get_loc("League")] = "background-color: #37474F; color: #CFD8DC; font-weight: 600;"
-            else:
-                styles[row.index.get_loc("League")] = "background-color: #00695C; color: #FFFFFF; font-weight: 600;"
-            # Badge - lebih terang
-            badge = str(row["Badge"]).upper()
-            if badge == "MAJOR":
-                styles[row.index.get_loc("Badge")] = "background-color: #2979FF; color: #FFFFFF; font-weight: 800;"
-            elif badge == "MINOR":
-                styles[row.index.get_loc("Badge")] = "background-color: #FFAB00; color: #000000; font-weight: 800;"
-            else:
-                styles[row.index.get_loc("Badge")] = "background-color: #78909C; color: #FFFFFF; font-weight: 700;"
-            # Activity
-            act = str(row["Activity"]).upper()
-            if act == "AKTIF":
-                styles[row.index.get_loc("Activity")] = "background-color: #00C853; color: #FFFFFF; font-weight: 800;"
-            elif act == "PASIF":
-                styles[row.index.get_loc("Activity")] = "background-color: #FF5252; color: #FFFFFF; font-weight: 800;"
-            elif "NO_STATS" in act or "NORMAL" in act:
-                styles[row.index.get_loc("Activity")] = "background-color: #FF6D00; color: #FFFFFF; font-weight: 700;"
-            # Min Entry - biru muda
-            styles[row.index.get_loc("Min Entry")] = "background-color: #01579B; color: #FFFFFF; font-weight: 700;"
-            # Entry Score / Current / Final
-            styles[row.index.get_loc("Entry Score")] = "background-color: #263238; color: #FFCC80; font-weight: 700;"
-            styles[row.index.get_loc("Current Score")] = "background-color: #263238; color: #FFFFFF; font-weight: 700;"
-            styles[row.index.get_loc("Final Score")] = "background-color: #263238; color: #B3E5FC; font-weight: 700;"
-            # Result - pill terang
-            res_val = str(row["Result"]).upper()
-            if res_val == "WIN":
-                styles[row.index.get_loc("Result")] = "background-color: #00C853; color: #FFFFFF; font-weight: 800;"
-            elif res_val == "LOSE":
-                styles[row.index.get_loc("Result")] = "background-color: #FF5252; color: #FFFFFF; font-weight: 800;"
-            elif res_val == "LIVE":
-                styles[row.index.get_loc("Result")] = "background-color: #2979FF; color: #FFFFFF; font-weight: 800;"
-            elif res_val == "PENDING":
-                styles[row.index.get_loc("Result")] = "background-color: #FFAB00; color: #000000; font-weight: 800;"
-            elif res_val == "VOID":
-                styles[row.index.get_loc("Result")] = "background-color: #78909C; color: #FFFFFF; font-weight: 800;"
-            elif res_val in ("REVIEW", "DATA UNVERIFIED"):
-                styles[row.index.get_loc("Result")] = "background-color: #FF6D00; color: #FFFFFF; font-weight: 800;"
-            # Profit - neon
-            profit_str = str(row["Profit"])
-            if profit_str.startswith("-"):
-                styles[row.index.get_loc("Profit")] = "background-color: #FF5252; color: #FFFFFF; font-weight: 800;"
-            elif profit_str.startswith("Rp") and "Rp0" not in profit_str:
-                styles[row.index.get_loc("Profit")] = "background-color: #00C853; color: #FFFFFF; font-weight: 800;"
-            else:
-                styles[row.index.get_loc("Profit")] = "background-color: #2A3550; color: #94A3B8;"
-            # Trading Day - ungu
-            styles[row.index.get_loc("Trading Day")] = "background-color: #4527A0; color: #FFFFFF; font-weight: 700;"
-            return styles
-
-        styled = (
-            df_table.style.apply(style_table_vivid, axis=1)
-            .set_properties(**{"background-color": "#1A2436", "color": "#FFFFFF"})
-            .set_table_styles([{"selector": "th", "props": [("background-color", "#1E3A5F"), ("color", "white"), ("font-weight", "800")]}])
-        )
-        st.dataframe(styled, use_container_width=True, hide_index=True)
-
-        # =========================================================
-        # AUDIT - SEKARANG 3 KARTU BERWARNA
-        # =========================================================
         st.markdown("""<div class="section-card section-card-green"><h3 style="margin:0; border:none; padding:0;">🔍 Audit Trail & Penjelasan Hasil Pertandingan</h3><p style="margin:4px 0 0 0; color:#94A3B8; font-size:0.85rem;">Pilih satu pertandingan untuk melihat bukti entry, settlement, dan verifikasinya.</p></div>""", unsafe_allow_html=True)
         match_options = {f"[{r.get('trading_day')}] {r.get('home_team')} vs {r.get('away_team')} (ID: {r.get('match_id')})": r for r in top_20}
         selected_label = st.selectbox("Pilih Pertandingan untuk Audit Mendalam:", options=list(match_options.keys()))
@@ -629,51 +539,12 @@ def render_dashboard() -> None:
                 st.error(f"Temuan Audit: {', '.join(audit_info['issues'])}")
             a_col1, a_col2, a_col3 = st.columns(3)
             with a_col1:
-                st.markdown(
-                    f"""
-                    <div class="audit-card-blue">
-                        <b style="color:#40C4FF;">🔵 1. Identitas & Waktu Entry</b><br><br>
-                        <span>Match ID: <b>{sel_rec.get('match_id')}</b></span><br>
-                        <span>League: <b>{sel_rec.get('league_slug')} ({sel_rec.get('league_category')})</b></span><br>
-                        <span>Activity: <b>{sel_rec.get('activity_label', 'NORMAL')}</b></span><br>
-                        <span>Entry UTC: <b>{sel_rec.get('detected_at_utc')}</b></span><br>
-                        <span>Entry WITA: <b>{sel_rec.get('detected_at_wita')}</b></span><br>
-                        <span>Trading Day: <b>{sel_rec.get('trading_day')}</b></span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+                st.markdown(f"""<div class="audit-card-blue"><b style="color:#40C4FF;">🔵 1. Identitas & Waktu Entry</b><br><br><span>Match ID: <b>{sel_rec.get('match_id')}</b></span><br><span>League: <b>{sel_rec.get('league_slug')} ({sel_rec.get('league_category')})</b></span><br><span>Activity: <b>{sel_rec.get('activity_label', 'NORMAL')}</b></span><br><span>Entry UTC: <b>{sel_rec.get('detected_at_utc')}</b></span><br><span>Entry WITA: <b>{sel_rec.get('detected_at_wita')}</b></span><br><span>Trading Day: <b>{sel_rec.get('trading_day')}</b></span></div>""", unsafe_allow_html=True)
             with a_col2:
-                st.markdown(
-                    f"""
-                    <div class="audit-card-gold">
-                        <b style="color:#FFD54F;">🟡 2. Parameter Entry & Settlement</b><br><br>
-                        <span>Menit Entry: <b>{sel_rec.get('minute_detected')}'</b></span><br>
-                        <span>Skor Entry: <b>{sel_rec.get('score_at_entry')}</b></span><br>
-                        <span>Odds Aktual: <b>{sel_rec.get('odds_entry') or 'NOT AVAILABLE'}</b></span><br>
-                        <span>Sumber Odds: <b>{sel_rec.get('odds_source')}</b></span><br>
-                        <span>Status Match: <b>{sel_rec.get('match_status')}</b></span><br>
-                        <span>Settlement: <b>{sel_rec.get('settlement_status')} ({sel_rec.get('result')})</b></span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+                st.markdown(f"""<div class="audit-card-gold"><b style="color:#FFD54F;">🟡 2. Parameter Entry & Settlement</b><br><br><span>Menit Entry: <b>{sel_rec.get('minute_detected')}'</b></span><br><span>Skor Entry: <b>{sel_rec.get('score_at_entry')}</b></span><br><span>Odds Aktual: <b>{sel_rec.get('odds_entry') or 'NOT AVAILABLE'}</b></span><br><span>Sumber Odds: <b>{sel_rec.get('odds_source')}</b></span><br><span>Status Match: <b>{sel_rec.get('match_status')}</b></span><br><span>Settlement: <b>{sel_rec.get('settlement_status')} ({sel_rec.get('result')})</b></span></div>""", unsafe_allow_html=True)
             with a_col3:
                 act_p2 = sel_rec.get("actual_profit")
-                st.markdown(
-                    f"""
-                    <div class="audit-card-green">
-                        <b style="color:#69F0AE;">🟢 3. Profit & Verifikasi</b><br><br>
-                        <span>Stake: <b>{format_idr(int(sel_rec.get('stake') or DEFAULT_STAKE))}</b></span><br>
-                        <span>Profit Sim: <b>{format_idr(int(sel_rec.get('simulated_profit') or 0))}</b></span><br>
-                        <span>Profit Aktual: <b>{format_idr(int(act_p2)) if act_p2 is not None else 'NOT AVAILABLE'}</b></span><br>
-                        <span>Sumber Data: <b>{sel_rec.get('source')}</b></span><br>
-                        <span>Verifikasi: <b>{sel_rec.get('verification_status')}</b></span><br>
-                        <span>Terakhir Diverifikasi: <b>{sel_rec.get('last_verified_at')}</b></span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+                st.markdown(f"""<div class="audit-card-green"><b style="color:#69F0AE;">🟢 3. Profit & Verifikasi</b><br><br><span>Stake: <b>{format_idr(int(sel_rec.get('stake') or DEFAULT_STAKE))}</b></span><br><span>Profit Sim: <b>{format_idr(int(sel_rec.get('simulated_profit') or 0))}</b></span><br><span>Profit Aktual: <b>{format_idr(int(act_p2)) if act_p2 is not None else 'NOT AVAILABLE'}</b></span><br><span>Sumber Data: <b>{sel_rec.get('source')}</b></span><br><span>Verifikasi: <b>{sel_rec.get('verification_status')}</b></span><br><span>Terakhir Diverifikasi: <b>{sel_rec.get('last_verified_at')}</b></span></div>""", unsafe_allow_html=True)
             s_col1, s_col2 = st.columns(2)
             with s_col1:
                 st.markdown("**Riwayat Snapshot Skor Berkala:**")
